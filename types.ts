@@ -9,6 +9,7 @@ export interface ShippingForm {
   phoneNumberDay: string;
   phoneNumberEvening: string;
   emailAddress: string;
+  redirectURL?: string;
   cartItems: CartItem[];
 }
 
@@ -37,6 +38,7 @@ export interface Order {
   shippingEmailAddress: string;
   paymentID?: string;
   paymentTime?: Date;
+  redirectURL?: string;
   items?: Array<{
     itemIndex: number;
     productSKU: string;

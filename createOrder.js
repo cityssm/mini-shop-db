@@ -51,14 +51,15 @@ exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, functi
             .input("shippingEmailAddress", sql.NVarChar(50), shippingForm.emailAddress)
             .input("shippingPhoneNumberDay", sql.NVarChar(50), shippingForm.phoneNumberDay)
             .input("shippingPhoneNumberEvening", sql.NVarChar(50), shippingForm.phoneNumberEvening)
+            .input("redirectURL", sql.NVarChar(200), shippingForm.redirectURL)
             .query("insert into MiniShop.Orders (" +
             " orderNumber," +
             " shippingName, shippingAddress1, shippingAddress2," +
             " shippingCity, shippingProvince, shippingCountry, shippingPostalCode," +
-            " shippingEmailAddress, shippingPhoneNumberDay, shippingPhoneNumberEvening)" +
+            " shippingEmailAddress, shippingPhoneNumberDay, shippingPhoneNumberEvening, redirectURL)" +
             " values (@orderNumber, @shippingName, @shippingAddress1, @shippingAddress2," +
             " @shippingCity, @shippingProvince, @shippingCountry, @shippingPostalCode," +
-            " @shippingEmailAddress, @shippingPhoneNumberDay, @shippingPhoneNumberEvening)");
+            " @shippingEmailAddress, @shippingPhoneNumberDay, @shippingPhoneNumberEvening, @redirectURL)");
         const orderResult = yield pool.request()
             .input("orderNumber", sql.VarChar(50), orderNumber)
             .query("select top 1 orderID, orderSecret" +

@@ -22,7 +22,7 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
         " shippingName, shippingAddress1, shippingAddress2," +
         " shippingCity, shippingProvince, shippingCountry, shippingPostalCode," +
         " shippingEmailAddress, shippingPhoneNumberDay, shippingPhoneNumberEvening," +
-        " paymentID, paymentTime" +
+        " paymentID, paymentTime, redirectURL" +
         " from MiniShop.Orders" +
         " where orderIsRefunded = 0 and orderIsDeleted = 0" +
         " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)" +

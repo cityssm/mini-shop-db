@@ -19,6 +19,8 @@ create table MiniShop.Orders (
 	shippingPhoneNumberDay     nvarchar(50),
 	shippingPhoneNumberEvening nvarchar(50),
 
+	redirectURL nvarchar(200),
+
 	paymentTime datetime,
 	paymentID   nvarchar(50),
 
