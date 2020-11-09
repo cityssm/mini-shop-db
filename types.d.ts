@@ -1,13 +1,13 @@
 export interface ShippingForm {
     fullName: string;
     address: string;
-    address2: string;
+    address2?: string;
     city: string;
     province: string;
-    country: string;
+    country?: string;
     postalCode: string;
     phoneNumberDay: string;
-    phoneNumberEvening: string;
+    phoneNumberEvening?: string;
     emailAddress: string;
     redirectURL?: string;
     cartItems: CartItem[];
@@ -52,10 +52,11 @@ export interface Order {
     }>;
 }
 export interface Product {
-    productName: string;
+    productSKU?: string;
+    productName?: string;
     price: number;
     formFieldsToSave?: Array<{
-        fieldName: string;
+        fieldName?: string;
         formFieldName: string;
     }>;
     fees?: string[];

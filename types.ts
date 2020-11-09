@@ -1,13 +1,13 @@
 export interface ShippingForm {
   fullName: string;
   address: string;
-  address2: string;
+  address2?: string;
   city: string;
   province: string;
-  country: string;
+  country?: string;
   postalCode: string;
   phoneNumberDay: string;
-  phoneNumberEvening: string;
+  phoneNumberEvening?: string;
   emailAddress: string;
   redirectURL?: string;
   cartItems: CartItem[];
@@ -15,7 +15,7 @@ export interface ShippingForm {
 
 
 export interface CartItem {
-  productSKU: string;
+  productSKU: string; // maxlength = 20
   quantity: string;
   [formFieldName: string]: string;
 }
@@ -58,12 +58,12 @@ export interface Order {
 
 
 export interface Product {
-  productName: string;
+  productSKU?: string;
+  productName?: string;
   price: number;
   formFieldsToSave?: Array<{
-    fieldName: string;
-    // formFieldName maxlength = 30
-    formFieldName: string;
+    fieldName?: string;
+    formFieldName: string; // maxlength = 30
   }>;
   fees?: string[];
   feeTotals?: {
