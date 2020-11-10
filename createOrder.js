@@ -39,7 +39,7 @@ exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, functi
     const orderNumber = config.getOrderNumberFunction()();
     try {
         const pool = yield sqlPool.connect(config.getMSSQLConfig());
-        yield pool.request()
+        const orderResult = yield pool.request()
             .input("orderNumber", sql.VarChar(50), orderNumber)
             .input("shippingName", sql.NVarChar(100), shippingForm.fullName)
             .input("shippingAddress1", sql.NVarChar(100), shippingForm.address)
@@ -57,17 +57,13 @@ exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, functi
             " shippingName, shippingAddress1, shippingAddress2," +
             " shippingCity, shippingProvince, shippingCountry, shippingPostalCode," +
             " shippingEmailAddress, shippingPhoneNumberDay, shippingPhoneNumberEvening, redirectURL)" +
+            " output inserted.orderID, inserted.orderSecret, inserted.orderTime" +
             " values (@orderNumber, @shippingName, @shippingAddress1, @shippingAddress2," +
             " @shippingCity, @shippingProvince, @shippingCountry, @shippingPostalCode," +
             " @shippingEmailAddress, @shippingPhoneNumberDay, @shippingPhoneNumberEvening, @redirectURL)");
-        const orderResult = yield pool.request()
-            .input("orderNumber", sql.VarChar(50), orderNumber)
-            .query("select top 1 orderID, orderSecret" +
-            " from MiniShop.Orders" +
-            " where orderNumber = @orderNumber" +
-            " order by orderID desc");
         const orderID = orderResult.recordset[0].orderID;
         const orderSecret = orderResult.recordset[0].orderSecret;
+        const orderTime = orderResult.recordset[0].orderTime;
         const feeTotals = {};
         const allProducts = config.getProducts();
         for (let cartIndex = 0; cartIndex < shippingForm.cartItems.length; cartIndex += 1) {
@@ -99,7 +95,8 @@ exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, functi
         return {
             success: true,
             orderNumber,
-            orderSecret
+            orderSecret,
+            orderTime
         };
     }
     catch (_e) {

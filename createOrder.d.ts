@@ -4,6 +4,7 @@ declare type CreateOrderReturn = {
     success: true;
     orderNumber: string;
     orderSecret: string;
+    orderTime: Date;
 } | {
     success: false;
 };

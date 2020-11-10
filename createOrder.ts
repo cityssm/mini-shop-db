@@ -8,6 +8,7 @@ type CreateOrderReturn = {
   success: true;
   orderNumber: string;
   orderSecret: string;
+  orderTime: Date;
 } | {
   success: false;
 };
@@ -55,7 +56,7 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
 
     // Create the Order record
 
-    await pool.request()
+    const orderResult = await pool.request()
       .input("orderNumber", sql.VarChar(50), orderNumber)
       .input("shippingName", sql.NVarChar(100), shippingForm.fullName)
       .input("shippingAddress1", sql.NVarChar(100), shippingForm.address)
@@ -74,21 +75,15 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
         " shippingCity, shippingProvince, shippingCountry, shippingPostalCode," +
         " shippingEmailAddress, shippingPhoneNumberDay, shippingPhoneNumberEvening, redirectURL)" +
 
+        " output inserted.orderID, inserted.orderSecret, inserted.orderTime" +
+
         " values (@orderNumber, @shippingName, @shippingAddress1, @shippingAddress2," +
         " @shippingCity, @shippingProvince, @shippingCountry, @shippingPostalCode," +
         " @shippingEmailAddress, @shippingPhoneNumberDay, @shippingPhoneNumberEvening, @redirectURL)");
 
-    // Get the order ID and secret
-
-    const orderResult = await pool.request()
-      .input("orderNumber", sql.VarChar(50), orderNumber)
-      .query("select top 1 orderID, orderSecret" +
-        " from MiniShop.Orders" +
-        " where orderNumber = @orderNumber" +
-        " order by orderID desc");
-
     const orderID = orderResult.recordset[0].orderID as number;
     const orderSecret = orderResult.recordset[0].orderSecret as string;
+    const orderTime = orderResult.recordset[0].orderTime as Date;
 
     // Loop through the cart items
 
@@ -142,7 +137,8 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
     return {
       success: true,
       orderNumber,
-      orderSecret
+      orderSecret,
+      orderTime
     };
 
   } catch (_e) {
