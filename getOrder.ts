@@ -6,7 +6,7 @@ import * as config from "./config";
 import type { Order } from "./types";
 
 
-export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean) => {
+export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry: boolean = true) => {
 
   try {
     const pool: sql.ConnectionPool =
@@ -25,7 +25,9 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
         " paymentID, paymentTime, redirectURL" +
         " from MiniShop.Orders" +
         " where orderIsRefunded = 0 and orderIsDeleted = 0" +
-        " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)" +
+        (enforceExpiry
+          ? " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)"
+          : "") +
         " and orderNumber = @orderNumber" +
         " and orderSecret = @orderSecret" +
         " and orderIsPaid = @orderIsPaid");

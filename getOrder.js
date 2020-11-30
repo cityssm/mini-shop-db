@@ -13,7 +13,7 @@ exports.getOrder = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-exports.getOrder = (orderNumber, orderSecret, orderIsPaid) => __awaiter(void 0, void 0, void 0, function* () {
+const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield sqlPool.connect(config.getMSSQLConfig());
         const orderResult = yield pool.request()
@@ -27,7 +27,9 @@ exports.getOrder = (orderNumber, orderSecret, orderIsPaid) => __awaiter(void 0, 
             " paymentID, paymentTime, redirectURL" +
             " from MiniShop.Orders" +
             " where orderIsRefunded = 0 and orderIsDeleted = 0" +
-            " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)" +
+            (enforceExpiry
+                ? " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)"
+                : "") +
             " and orderNumber = @orderNumber" +
             " and orderSecret = @orderSecret" +
             " and orderIsPaid = @orderIsPaid");
@@ -62,3 +64,4 @@ exports.getOrder = (orderNumber, orderSecret, orderIsPaid) => __awaiter(void 0, 
     }
     return false;
 });
+exports.getOrder = getOrder;
