@@ -13,7 +13,7 @@ exports.createOrder = exports.insertOrderItem = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-exports.insertOrderItem = (pool, orderID, cartIndex, cartItem) => __awaiter(void 0, void 0, void 0, function* () {
+const insertOrderItem = (pool, orderID, cartIndex, cartItem) => __awaiter(void 0, void 0, void 0, function* () {
     const product = config.getProduct(cartItem.productSKU);
     yield pool.request()
         .input("orderID", sql.BigInt, orderID)
@@ -35,7 +35,8 @@ exports.insertOrderItem = (pool, orderID, cartIndex, cartItem) => __awaiter(void
             " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
     }
 });
-exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, function* () {
+exports.insertOrderItem = insertOrderItem;
+const createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, function* () {
     const orderNumber = config.getOrderNumberFunction()();
     try {
         const pool = yield sqlPool.connect(config.getMSSQLConfig());
@@ -105,3 +106,4 @@ exports.createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, functi
         };
     }
 });
+exports.createOrder = createOrder;

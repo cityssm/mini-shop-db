@@ -41,6 +41,7 @@ export interface Order {
         unitPrice: number;
         quantity: number;
         itemTotal: number;
+        fields?: OrderItemField[];
     }>;
     fees?: Array<{
         feeName: string;
@@ -50,6 +51,11 @@ export interface Order {
         dataName: string;
         dataValue: string;
     }>;
+}
+export interface OrderItemField {
+    itemIndex?: number;
+    formFieldName: string;
+    fieldValue: string;
 }
 export interface Product {
     productSKU?: string;

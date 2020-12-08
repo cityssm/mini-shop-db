@@ -14,7 +14,7 @@ const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
 const isOrderFoundAndPaid_1 = require("./isOrderFoundAndPaid");
-exports.updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, function* () {
+const updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, function* () {
     if (!validOrder.isValid) {
         return false;
     }
@@ -51,3 +51,4 @@ exports.updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, fu
     }
     return false;
 });
+exports.updateOrderAsPaid = updateOrderAsPaid;

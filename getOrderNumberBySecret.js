@@ -13,7 +13,7 @@ exports.getOrderNumberBySecret = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-exports.getOrderNumberBySecret = (orderSecret) => __awaiter(void 0, void 0, void 0, function* () {
+const getOrderNumberBySecret = (orderSecret) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield sqlPool.connect(config.getMSSQLConfig());
         const orderResult = yield pool.request()
@@ -32,3 +32,4 @@ exports.getOrderNumberBySecret = (orderSecret) => __awaiter(void 0, void 0, void
     }
     return false;
 });
+exports.getOrderNumberBySecret = getOrderNumberBySecret;

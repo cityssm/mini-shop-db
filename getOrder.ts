@@ -3,7 +3,7 @@ import * as sql from "mssql";
 import * as config from "./config";
 
 
-import type { Order } from "./types";
+import type { Order, OrderItemField } from "./types";
 
 
 export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry: boolean = true) => {
@@ -26,7 +26,7 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
         " from MiniShop.Orders" +
         " where orderIsRefunded = 0 and orderIsDeleted = 0" +
         (enforceExpiry
-          ? " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)"
+          ? " and (datediff(minute, orderTime, getdate()) < 90 or datediff(minute, paymentTime, getdate()) < 180)"
           : "") +
         " and orderNumber = @orderNumber" +
         " and orderSecret = @orderSecret" +
@@ -47,6 +47,36 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
         " where orderID = @orderID");
 
     order.items = orderItemsResult.recordset;
+
+    // Get order item fields
+
+    const fieldsResult = await pool.request()
+      .input("orderID", sql.BigInt, order.orderID)
+      .query("select itemIndex, formFieldName, fieldValue" +
+        " from MiniShop.OrderItemFields" +
+        " where orderID = @orderID");
+
+    if (fieldsResult.recordset && fieldsResult.recordset.length > 0) {
+
+      const fieldsMap = new Map<number, OrderItemField[]>();
+
+      const fieldsList: sql.IRecordSet<OrderItemField> = fieldsResult.recordset;
+
+      for (const fieldData of fieldsList) {
+
+        if (fieldsMap.has(fieldData.itemIndex)) {
+          fieldsMap.get(fieldData.itemIndex).push(fieldData);
+        } else {
+          fieldsMap.set(fieldData.itemIndex, [fieldData]);
+        }
+      }
+
+      for (const orderItem of order.items) {
+        if (fieldsMap.has(orderItem.itemIndex)) {
+          orderItem.fields = fieldsMap.get(orderItem.itemIndex);
+        }
+      }
+    }
 
     // Get order fees
 

@@ -28,7 +28,7 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
             " from MiniShop.Orders" +
             " where orderIsRefunded = 0 and orderIsDeleted = 0" +
             (enforceExpiry
-                ? " and (datediff(minute, orderTime, getdate()) < 60 or datediff(minute, paymentTime, getdate()) < 120)"
+                ? " and (datediff(minute, orderTime, getdate()) < 90 or datediff(minute, paymentTime, getdate()) < 180)"
                 : "") +
             " and orderNumber = @orderNumber" +
             " and orderSecret = @orderSecret" +
@@ -43,6 +43,28 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
             " from MiniShop.OrderItems" +
             " where orderID = @orderID");
         order.items = orderItemsResult.recordset;
+        const fieldsResult = yield pool.request()
+            .input("orderID", sql.BigInt, order.orderID)
+            .query("select itemIndex, formFieldName, fieldValue" +
+            " from MiniShop.OrderItemFields" +
+            " where orderID = @orderID");
+        if (fieldsResult.recordset && fieldsResult.recordset.length > 0) {
+            const fieldsMap = new Map();
+            const fieldsList = fieldsResult.recordset;
+            for (const fieldData of fieldsList) {
+                if (fieldsMap.has(fieldData.itemIndex)) {
+                    fieldsMap.get(fieldData.itemIndex).push(fieldData);
+                }
+                else {
+                    fieldsMap.set(fieldData.itemIndex, [fieldData]);
+                }
+            }
+            for (const orderItem of order.items) {
+                if (fieldsMap.has(orderItem.itemIndex)) {
+                    orderItem.fields = fieldsMap.get(orderItem.itemIndex);
+                }
+            }
+        }
         const orderFeesResult = yield pool.request()
             .input("orderID", sql.BigInt, order.orderID)
             .query("select feeName, feeTotal" +

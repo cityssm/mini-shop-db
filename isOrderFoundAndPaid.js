@@ -13,7 +13,7 @@ exports.isOrderFoundAndPaid = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-exports.isOrderFoundAndPaid = (orderNumber, orderSecret) => __awaiter(void 0, void 0, void 0, function* () {
+const isOrderFoundAndPaid = (orderNumber, orderSecret) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield sqlPool.connect(config.getMSSQLConfig());
         const orderResult = yield pool.request()
@@ -40,3 +40,4 @@ exports.isOrderFoundAndPaid = (orderNumber, orderSecret) => __awaiter(void 0, vo
         paid: false
     };
 });
+exports.isOrderFoundAndPaid = isOrderFoundAndPaid;
