@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/mini-shop-db",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "SQL query wrappers used by cityssm/mini-shop",
   "main": "index.js",
   "scripts": {},
@@ -15,14 +15,14 @@
   },
   "homepage": "https://github.com/cityssm/mini-shop-db#readme",
   "dependencies": {
-    "@cityssm/mssql-multi-pool": "^1.1.0",
-    "mssql": "^6.3.0"
+    "@cityssm/mssql-multi-pool": "^1.2.0",
+    "mssql": "^6.3.1"
   },
   "devDependencies": {
     "@types/mssql": "^6.0.7",
-    "@typescript-eslint/eslint-plugin": "^4.10.0",
-    "@typescript-eslint/parser": "^4.10.0",
-    "eslint": "^7.15.0",
+    "@typescript-eslint/eslint-plugin": "^4.12.0",
+    "@typescript-eslint/parser": "^4.12.0",
+    "eslint": "^7.17.0",
     "eslint-config-standard-with-typescript": "^19.0.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
