@@ -29,7 +29,7 @@ const insertOrderItem = (pool, orderID, cartIndex, cartItem) => __awaiter(void 0
             .input("orderID", sql.BigInt, orderID)
             .input("itemIndex", sql.TinyInt, cartIndex)
             .input("formFieldName", sql.VarChar(30), formField.formFieldName)
-            .input("fieldValue", sql.NVarChar, cartItem[formField.formFieldName])
+            .input("fieldValue", sql.NVarChar, cartItem[formField.formFieldName] || "")
             .query("insert into MiniShop.OrderItemFields (" +
             "orderID, itemIndex, formFieldName, fieldValue)" +
             " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
@@ -100,7 +100,8 @@ const createOrder = (shippingForm) => __awaiter(void 0, void 0, void 0, function
             orderTime
         };
     }
-    catch (_e) {
+    catch (e) {
+        config.logger.error(e);
         return {
             success: false
         };

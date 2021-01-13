@@ -36,7 +36,7 @@ export const insertOrderItem = async (pool: sql.ConnectionPool, orderID: number,
       .input("orderID", sql.BigInt, orderID)
       .input("itemIndex", sql.TinyInt, cartIndex)
       .input("formFieldName", sql.VarChar(30), formField.formFieldName)
-      .input("fieldValue", sql.NVarChar, cartItem[formField.formFieldName])
+      .input("fieldValue", sql.NVarChar, cartItem[formField.formFieldName] || "")
       .query("insert into MiniShop.OrderItemFields (" +
         "orderID, itemIndex, formFieldName, fieldValue)" +
         " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
@@ -141,7 +141,8 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
       orderTime
     };
 
-  } catch (_e) {
+  } catch (e) {
+    config.logger.error(e);
     return {
       success: false
     };

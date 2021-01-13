@@ -1,5 +1,29 @@
+import * as winston from "winston";
+
 import type { config as MSSQLConfig } from "mssql";
 import type * as types from "./types";
+
+
+/*
+ * Logging
+ */
+
+
+export const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  defaultMeta: { service: "user-service" },
+  transports: [
+    new winston.transports.File({ filename: "minishopDB-error.log", level: "error" }),
+    new winston.transports.File({ filename: "minishopDB-combined.log" })
+  ]
+});
+
+if (process.env.NODE_ENV !== "production") {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple()
+  }));
+}
 
 
 /*
@@ -43,10 +67,10 @@ export function getOrderNumberFunction() {
  */
 
 
-let _products: {[productSKU: string]: types.Product} = {};
+let _products: { [productSKU: string]: types.Product } = {};
 
 
-export function setProducts(products: {[productSKU: string]: types.Product}) {
+export function setProducts(products: { [productSKU: string]: types.Product }) {
   _products = products;
 }
 
@@ -71,10 +95,10 @@ export function getProduct(productSKU: string) {
  */
 
 
-let _fees: {[feeName: string]: types.Fee} = {};
+let _fees: { [feeName: string]: types.Fee } = {};
 
 
-export function setFees(fees: {[feeName: string]: types.Fee}) {
+export function setFees(fees: { [feeName: string]: types.Fee }) {
   _fees = fees;
 }
 
