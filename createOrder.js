@@ -15,11 +15,12 @@ const sql = require("mssql");
 const config = require("./config");
 const insertOrderItem = (pool, orderID, cartIndex, cartItem) => __awaiter(void 0, void 0, void 0, function* () {
     const product = config.getProduct(cartItem.productSKU);
+    const unitPrice = (typeof (product.price) === "number" ? product.price : parseFloat(cartItem.unitPrice));
     yield pool.request()
         .input("orderID", sql.BigInt, orderID)
         .input("itemIndex", sql.TinyInt, cartIndex)
         .input("productSKU", sql.VarChar(20), cartItem.productSKU)
-        .input("unitPrice", sql.Money, product.price)
+        .input("unitPrice", sql.Money, unitPrice)
         .input("quantity", sql.TinyInt, cartItem.quantity)
         .query("insert into MiniShop.OrderItems (" +
         "orderID, itemIndex, productSKU, unitPrice, quantity)" +

@@ -17,6 +17,7 @@ export interface ShippingForm {
 export interface CartItem {
   productSKU: string; // maxlength = 20
   quantity: string;
+  unitPrice: string;
   [formFieldName: string]: string;
 }
 
@@ -68,7 +69,7 @@ export interface OrderItemField {
 export interface Product {
   productSKU?: string;
   productName?: string;
-  price: number;
+  price: number | "form";
   formFieldsToSave?: Array<{
     fieldName?: string;
     formFieldName: string; // maxlength = 30

@@ -18,12 +18,14 @@ export const insertOrderItem = async (pool: sql.ConnectionPool, orderID: number,
 
   const product = config.getProduct(cartItem.productSKU);
 
+  const unitPrice = (typeof (product.price) === "number" ? product.price : parseFloat(cartItem.unitPrice));
+
   // Create the item record
   await pool.request()
     .input("orderID", sql.BigInt, orderID)
     .input("itemIndex", sql.TinyInt, cartIndex)
     .input("productSKU", sql.VarChar(20), cartItem.productSKU)
-    .input("unitPrice", sql.Money, product.price)
+    .input("unitPrice", sql.Money, unitPrice)
     .input("quantity", sql.TinyInt, cartItem.quantity)
     .query("insert into MiniShop.OrderItems (" +
       "orderID, itemIndex, productSKU, unitPrice, quantity)" +

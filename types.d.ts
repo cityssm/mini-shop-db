@@ -15,6 +15,7 @@ export interface ShippingForm {
 export interface CartItem {
     productSKU: string;
     quantity: string;
+    unitPrice: string;
     [formFieldName: string]: string;
 }
 export interface Order {
@@ -60,7 +61,7 @@ export interface OrderItemField {
 export interface Product {
     productSKU?: string;
     productName?: string;
-    price: number;
+    price: number | "form";
     formFieldsToSave?: Array<{
         fieldName?: string;
         formFieldName: string;
