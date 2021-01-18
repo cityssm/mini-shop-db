@@ -102,7 +102,7 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
     return order;
 
   } catch (e) {
-    console.log(e);
+    config.logger.error(e);
   }
 
   return false;

@@ -21,7 +21,7 @@ export interface CartItem {
 export interface Order {
     orderID: number;
     orderNumber: string;
-    orderSecret: string;
+    orderSecret?: string;
     orderTime: Date;
     shippingName: string;
     shippingAddress1: string;
@@ -36,14 +36,7 @@ export interface Order {
     paymentID?: string;
     paymentTime?: Date;
     redirectURL?: string;
-    items?: Array<{
-        itemIndex: number;
-        productSKU: string;
-        unitPrice: number;
-        quantity: number;
-        itemTotal: number;
-        fields?: OrderItemField[];
-    }>;
+    items?: OrderItem[];
     fees?: Array<{
         feeName: string;
         feeTotal: number;
@@ -52,6 +45,18 @@ export interface Order {
         dataName: string;
         dataValue: string;
     }>;
+}
+export interface OrderItem {
+    orderID?: number;
+    itemIndex: number;
+    productSKU: string;
+    unitPrice: number;
+    quantity: number;
+    itemTotal: number;
+    fields?: OrderItemField[];
+    acknowledgedTime?: Date;
+    acknowledgedUser?: string;
+    itemIsAcknowledged: boolean;
 }
 export interface OrderItemField {
     itemIndex?: number;

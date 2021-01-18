@@ -24,9 +24,6 @@ create table MiniShop.Orders (
 	paymentTime datetime,
 	paymentID   nvarchar(50),
 
-	acknowledgedTime datetime,
-	acknowledgedUser nvarchar(20),
-
 	refundTime   datetime,
 	refundID     nvarchar(50),
 	refundUser   nvarchar(20),
@@ -37,7 +34,6 @@ create table MiniShop.Orders (
 	deleteReason nvarchar(50),
 
 	orderIsPaid         as cast(case when paymentTime      is null then 0 else 1 end as bit) persisted,
-	orderIsAcknowledged as cast(case when acknowledgedTime is null then 0 else 1 end as bit) persisted,
 	orderIsRefunded     as cast(case when refundTime       is null then 0 else 1 end as bit) persisted,
 	orderIsDeleted      as cast(case when deleteTime       is null then 0 else 1 end as bit) persisted
 )
@@ -50,6 +46,10 @@ create table MiniShop.OrderItems (
 	unitPrice money   not null,
 	quantity  tinyint not null default 1,
 	itemTotal as unitPrice * quantity,
+
+	acknowledgedTime datetime,
+	acknowledgedUser nvarchar(20),
+	itemIsAcknowledged as cast(case when acknowledgedTime is null then 0 else 1 end as bit) persisted,
 
 	primary key (orderID, itemIndex),
 	foreign key (orderID)

@@ -82,7 +82,7 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
         return order;
     }
     catch (e) {
-        console.log(e);
+        config.logger.error(e);
     }
     return false;
 });
