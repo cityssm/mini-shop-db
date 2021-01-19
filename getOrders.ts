@@ -34,6 +34,7 @@ interface RawOrder {
 
   refundID?: string;
   refundTime?: Date;
+  refundUser?: string;
   refundReason?: string;
   orderIsRefunded: boolean;
 
@@ -118,6 +119,7 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
           orderID: rawOrder.orderID,
           orderNumber: rawOrder.orderNumber,
           orderTime: rawOrder.orderTime,
+
           shippingName: rawOrder.shippingName,
           shippingAddress1: rawOrder.shippingAddress1,
           shippingAddress2: rawOrder.shippingAddress2,
@@ -128,8 +130,17 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
           shippingPhoneNumberDay: rawOrder.shippingPhoneNumberDay,
           shippingPhoneNumberEvening: rawOrder.shippingPhoneNumberEvening,
           shippingEmailAddress: rawOrder.shippingEmailAddress,
+
           paymentID: rawOrder.paymentID,
           paymentTime: rawOrder.paymentTime,
+          orderIsPaid: rawOrder.orderIsPaid,
+
+          refundID: rawOrder.refundID,
+          refundTime: rawOrder.refundTime,
+          refundUser: rawOrder.refundUser,
+          refundReason: rawOrder.refundReason,
+          orderIsRefunded: rawOrder.orderIsRefunded,
+
           items: []
         };
       }

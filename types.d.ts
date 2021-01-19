@@ -35,6 +35,12 @@ export interface Order {
     shippingEmailAddress: string;
     paymentID?: string;
     paymentTime?: Date;
+    orderIsPaid: boolean;
+    refundID?: string;
+    refundTime?: Date;
+    refundUser?: string;
+    refundReason?: string;
+    orderIsRefunded: boolean;
     redirectURL?: string;
     items?: OrderItem[];
     fees?: Array<{

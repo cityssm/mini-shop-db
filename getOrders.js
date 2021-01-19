@@ -71,6 +71,12 @@ const getOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
                     shippingEmailAddress: rawOrder.shippingEmailAddress,
                     paymentID: rawOrder.paymentID,
                     paymentTime: rawOrder.paymentTime,
+                    orderIsPaid: rawOrder.orderIsPaid,
+                    refundID: rawOrder.refundID,
+                    refundTime: rawOrder.refundTime,
+                    refundUser: rawOrder.refundUser,
+                    refundReason: rawOrder.refundReason,
+                    orderIsRefunded: rawOrder.orderIsRefunded,
                     items: []
                 };
             }
