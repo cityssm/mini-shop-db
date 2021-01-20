@@ -70,7 +70,7 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
       " from MiniShop.OrderItems i" +
       " left join MiniShop.Orders o on i.orderID = o.orderID" +
       " left join MiniShop.OrderItemFields f on i.orderID = f.orderID and i.itemIndex = f.itemIndex" +
-      " where o.orderIsDeleted = 1";
+      " where o.orderIsDeleted = 0";
 
     if (filters.hasOwnProperty("productSKUs")) {
       sql += " and i.productSKU in ('" + filters.productSKUs.join("','") + "')";
