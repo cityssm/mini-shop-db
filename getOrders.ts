@@ -9,6 +9,7 @@ export interface GetOrderFilters {
   productSKUs?: string[];
   orderIsPaid?: 0 | 1;
   orderIsRefunded?: 0 | 1;
+  orderTimeMaxAgeDays?: number;
 };
 
 
@@ -82,6 +83,10 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
 
     if (filters.hasOwnProperty("orderIsRefunded")) {
       sql += " and o.orderIsRefunded = " + filters.orderIsRefunded.toString();
+    }
+
+    if (filters.hasOwnProperty("orderTimeMaxAgeDays")) {
+      sql += " and datediff(day, orderTime, getdate()) <= " + filters.orderTimeMaxAgeDays.toString();
     }
 
     sql += " order by o.orderID desc, i.itemIndex asc, f.formFieldName";

@@ -37,6 +37,9 @@ const getOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
         if (filters.hasOwnProperty("orderIsRefunded")) {
             sql += " and o.orderIsRefunded = " + filters.orderIsRefunded.toString();
         }
+        if (filters.hasOwnProperty("orderTimeMaxAgeDays")) {
+            sql += " and datediff(day, orderTime, getdate()) <= " + filters.orderTimeMaxAgeDays.toString();
+        }
         sql += " order by o.orderID desc, i.itemIndex asc, f.formFieldName";
         const rawResult = yield pool.request()
             .query(sql);
