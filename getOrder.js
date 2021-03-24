@@ -1,22 +1,15 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrder = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => __awaiter(void 0, void 0, void 0, function* () {
+const debug_1 = require("debug");
+const debugSQL = debug_1.debug("mini-shop-db:getOrder");
+const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
     try {
-        const pool = yield sqlPool.connect(config.getMSSQLConfig());
-        const orderResult = yield pool.request()
+        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const orderResult = await pool.request()
             .input("orderNumber", sql.VarChar(50), orderNumber)
             .input("orderSecret", sql.UniqueIdentifier, orderSecret)
             .input("orderIsPaid", sql.Bit, orderIsPaid ? 1 : 0)
@@ -37,13 +30,13 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
             return false;
         }
         const order = orderResult.recordset[0];
-        const orderItemsResult = yield pool.request()
+        const orderItemsResult = await pool.request()
             .input("orderID", sql.BigInt, order.orderID)
             .query("select itemIndex, productSKU, unitPrice, quantity, itemTotal" +
             " from MiniShop.OrderItems" +
             " where orderID = @orderID");
         order.items = orderItemsResult.recordset;
-        const fieldsResult = yield pool.request()
+        const fieldsResult = await pool.request()
             .input("orderID", sql.BigInt, order.orderID)
             .query("select itemIndex, formFieldName, fieldValue" +
             " from MiniShop.OrderItemFields" +
@@ -65,14 +58,14 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
                 }
             }
         }
-        const orderFeesResult = yield pool.request()
+        const orderFeesResult = await pool.request()
             .input("orderID", sql.BigInt, order.orderID)
             .query("select feeName, feeTotal" +
             " from MiniShop.OrderFees" +
             " where orderID = @orderID");
         order.fees = orderFeesResult.recordset;
         if (orderIsPaid) {
-            const paymentDataResult = yield pool.request()
+            const paymentDataResult = await pool.request()
                 .input("orderID", sql.BigInt, order.orderID)
                 .query("select dataName, dataValue" +
                 " from MiniShop.PaymentData" +
@@ -82,8 +75,8 @@ const getOrder = (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) =
         return order;
     }
     catch (e) {
-        config.logger.error(e);
+        debugSQL(e);
     }
     return false;
-});
+};
 exports.getOrder = getOrder;

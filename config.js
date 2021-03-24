@@ -1,21 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFee = exports.setFee = exports.getFees = exports.setFees = exports.getProduct = exports.setProduct = exports.getProducts = exports.setProducts = exports.getOrderNumberFunction = exports.setOrderNumberFunction = exports.getMSSQLConfig = exports.setMSSQLConfig = exports.logger = void 0;
-const winston = require("winston");
-exports.logger = winston.createLogger({
-    level: "info",
-    format: winston.format.json(),
-    defaultMeta: { service: "user-service" },
-    transports: [
-        new winston.transports.File({ filename: "minishopDB-error.log", level: "error" }),
-        new winston.transports.File({ filename: "minishopDB-combined.log" })
-    ]
-});
-if (process.env.NODE_ENV !== "production") {
-    exports.logger.add(new winston.transports.Console({
-        format: winston.format.simple()
-    }));
-}
+exports.getFee = exports.setFee = exports.getFees = exports.setFees = exports.getProduct = exports.setProduct = exports.getProducts = exports.setProducts = exports.getOrderNumberFunction = exports.setOrderNumberFunction = exports.getMSSQLConfig = exports.setMSSQLConfig = void 0;
 let _mssqlConfig = null;
 function setMSSQLConfig(mssqlConfig) {
     _mssqlConfig = mssqlConfig;

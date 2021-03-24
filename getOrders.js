@@ -1,21 +1,14 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrders = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const config = require("./config");
+const debug_1 = require("debug");
+const debugSQL = debug_1.debug("mini-shop-db:getOrders");
 ;
-const getOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
+const getOrders = async (filters) => {
     try {
-        const pool = yield sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.getMSSQLConfig());
         let sql = "select o.orderID, o.orderNumber, o.orderTime," +
             " o.shippingName, o.shippingAddress1, o.shippingAddress2, o.shippingCity, o.shippingProvince, o.shippingCountry, o.shippingPostalCode," +
             " o.shippingEmailAddress, o.shippingPhoneNumberDay, o.shippingPhoneNumberEvening," +
@@ -41,7 +34,7 @@ const getOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
             sql += " and datediff(day, orderTime, getdate()) <= " + filters.orderTimeMaxAgeDays.toString();
         }
         sql += " order by o.orderID desc, i.itemIndex asc, f.formFieldName";
-        const rawResult = yield pool.request()
+        const rawResult = await pool.request()
             .query(sql);
         if (!rawResult.recordset || rawResult.recordset.length === 0) {
             return [];
@@ -112,8 +105,8 @@ const getOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
         return orders;
     }
     catch (e) {
-        config.logger.error(e);
+        debugSQL(e);
     }
     return [];
-});
+};
 exports.getOrders = getOrders;

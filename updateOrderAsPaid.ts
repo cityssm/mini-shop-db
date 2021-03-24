@@ -6,6 +6,9 @@ import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid";
 
 import type { StoreValidatorReturn } from "./types";
 
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:updateOrderAsPaid");
+
 
 export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promise<boolean> => {
 
@@ -52,7 +55,7 @@ export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promi
     return true;
 
   } catch (e) {
-    console.log(e);
+    debugSQL(e);
   }
 
   return false;

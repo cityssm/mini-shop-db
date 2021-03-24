@@ -1,24 +1,17 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateOrderAsPaid = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
 const isOrderFoundAndPaid_1 = require("./isOrderFoundAndPaid");
-const updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, function* () {
+const debug_1 = require("debug");
+const debugSQL = debug_1.debug("mini-shop-db:updateOrderAsPaid");
+const updateOrderAsPaid = async (validOrder) => {
     if (!validOrder.isValid) {
         return false;
     }
-    const order = yield isOrderFoundAndPaid_1.isOrderFoundAndPaid(validOrder.orderNumber, validOrder.orderSecret);
+    const order = await isOrderFoundAndPaid_1.isOrderFoundAndPaid(validOrder.orderNumber, validOrder.orderSecret);
     if (!order.found) {
         return false;
     }
@@ -26,8 +19,8 @@ const updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, func
         return true;
     }
     try {
-        const pool = yield sqlPool.connect(config.getMSSQLConfig());
-        yield pool.request()
+        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        await pool.request()
             .input("paymentID", sql.NVarChar(50), validOrder.paymentID)
             .input("orderID", sql.BigInt, order.orderID)
             .query("update MiniShop.Orders" +
@@ -36,7 +29,7 @@ const updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, func
             " where orderID = @orderID");
         if (validOrder.paymentData) {
             for (const dataName of Object.keys(validOrder.paymentData)) {
-                yield pool.request()
+                await pool.request()
                     .input("orderID", sql.BigInt, order.orderID)
                     .input("dataName", sql.VarChar(30), dataName)
                     .input("dataValue", sql.NVarChar, validOrder.paymentData[dataName])
@@ -47,8 +40,8 @@ const updateOrderAsPaid = (validOrder) => __awaiter(void 0, void 0, void 0, func
         return true;
     }
     catch (e) {
-        console.log(e);
+        debugSQL(e);
     }
     return false;
-});
+};
 exports.updateOrderAsPaid = updateOrderAsPaid;

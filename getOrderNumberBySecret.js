@@ -1,22 +1,15 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrderNumberBySecret = void 0;
 const sqlPool = require("@cityssm/mssql-multi-pool");
 const sql = require("mssql");
 const config = require("./config");
-const getOrderNumberBySecret = (orderSecret) => __awaiter(void 0, void 0, void 0, function* () {
+const debug_1 = require("debug");
+const debugSQL = debug_1.debug("mini-shop-db:getOrderNumberBySecret");
+const getOrderNumberBySecret = async (orderSecret) => {
     try {
-        const pool = yield sqlPool.connect(config.getMSSQLConfig());
-        const orderResult = yield pool.request()
+        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const orderResult = await pool.request()
             .input("orderSecret", sql.UniqueIdentifier, orderSecret)
             .query("select orderNumber" +
             " from MiniShop.Orders" +
@@ -28,8 +21,8 @@ const getOrderNumberBySecret = (orderSecret) => __awaiter(void 0, void 0, void 0
         return orderResult.recordset[0].orderNumber;
     }
     catch (e) {
-        console.log(e);
+        debugSQL(e);
     }
     return false;
-});
+};
 exports.getOrderNumberBySecret = getOrderNumberBySecret;

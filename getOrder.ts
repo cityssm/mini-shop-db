@@ -2,8 +2,10 @@ import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
 import * as config from "./config";
 
-
 import type { Order, OrderItemField } from "./types";
+
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:getOrder");
 
 
 export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry: boolean = true) => {
@@ -102,7 +104,7 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
     return order;
 
   } catch (e) {
-    config.logger.error(e);
+    debugSQL(e);
   }
 
   return false;

@@ -4,6 +4,9 @@ import * as config from "./config";
 
 import type { ShippingForm, CartItem } from "./types";
 
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:createOrder");
+
 type CreateOrderReturn = {
   success: true;
   orderNumber: string;
@@ -144,7 +147,7 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
     };
 
   } catch (e) {
-    config.logger.error(e);
+    debugSQL(e);
     return {
       success: false
     };

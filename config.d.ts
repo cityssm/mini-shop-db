@@ -1,7 +1,5 @@
-import * as winston from "winston";
 import type { config as MSSQLConfig } from "mssql";
 import type * as types from "./types";
-export declare const logger: winston.Logger;
 export declare function setMSSQLConfig(mssqlConfig: MSSQLConfig): void;
 export declare function getMSSQLConfig(): MSSQLConfig;
 export declare function setOrderNumberFunction(orderNumberFunction: () => string): void;

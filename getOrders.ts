@@ -4,6 +4,9 @@ import * as config from "./config";
 
 import type { Order, OrderItem } from "./types";
 
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:getOrders");
+
 
 export interface GetOrderFilters {
   productSKUs?: string[];
@@ -191,7 +194,7 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
     return orders;
 
   } catch (e) {
-    config.logger.error(e);
+    debugSQL(e);
   }
 
   return [];
