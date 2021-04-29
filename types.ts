@@ -99,6 +99,7 @@ export interface Product {
 
 
 export interface Fee {
+  feeSKU?: string;
   feeName: string;
   feeCalculation: (product: Product) => number;
 }
