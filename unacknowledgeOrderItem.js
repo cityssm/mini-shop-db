@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.unacknowledgeOrderItem = void 0;
-const sqlPool = require("@cityssm/mssql-multi-pool");
-const config = require("./config");
-const debug_1 = require("debug");
-const debugSQL = debug_1.debug("mini-shop-db:unacknowledgeOrderItem");
-const unacknowledgeOrderItem = async (orderID, itemIndex) => {
+import * as sqlPool from "@cityssm/mssql-multi-pool";
+import * as config from "./config.js";
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:unacknowledgeOrderItem");
+export const unacknowledgeOrderItem = async (orderID, itemIndex) => {
     try {
         const pool = await sqlPool.connect(config.getMSSQLConfig());
         const result = await pool.request()
@@ -23,4 +20,3 @@ const unacknowledgeOrderItem = async (orderID, itemIndex) => {
     }
     return false;
 };
-exports.unacknowledgeOrderItem = unacknowledgeOrderItem;

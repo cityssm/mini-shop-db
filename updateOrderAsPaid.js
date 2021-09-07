@@ -1,17 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrderAsPaid = void 0;
-const sqlPool = require("@cityssm/mssql-multi-pool");
-const sql = require("mssql");
-const config = require("./config");
-const isOrderFoundAndPaid_1 = require("./isOrderFoundAndPaid");
-const debug_1 = require("debug");
-const debugSQL = debug_1.debug("mini-shop-db:updateOrderAsPaid");
-const updateOrderAsPaid = async (validOrder) => {
+import * as sqlPool from "@cityssm/mssql-multi-pool";
+import * as sql from "mssql";
+import * as config from "./config.js";
+import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid";
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:updateOrderAsPaid");
+export const updateOrderAsPaid = async (validOrder) => {
     if (!validOrder.isValid) {
         return false;
     }
-    const order = await isOrderFoundAndPaid_1.isOrderFoundAndPaid(validOrder.orderNumber, validOrder.orderSecret);
+    const order = await isOrderFoundAndPaid(validOrder.orderNumber, validOrder.orderSecret);
     if (!order.found) {
         return false;
     }
@@ -44,4 +41,3 @@ const updateOrderAsPaid = async (validOrder) => {
     }
     return false;
 };
-exports.updateOrderAsPaid = updateOrderAsPaid;

@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrder = void 0;
-const sqlPool = require("@cityssm/mssql-multi-pool");
-const sql = require("mssql");
-const config = require("./config");
-const debug_1 = require("debug");
-const debugSQL = debug_1.debug("mini-shop-db:getOrder");
-const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
+import * as sqlPool from "@cityssm/mssql-multi-pool";
+import * as sql from "mssql";
+import * as config from "./config.js";
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:getOrder");
+export const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
     try {
         const pool = await sqlPool.connect(config.getMSSQLConfig());
         const orderResult = await pool.request()
@@ -79,4 +76,3 @@ const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = t
     }
     return false;
 };
-exports.getOrder = getOrder;

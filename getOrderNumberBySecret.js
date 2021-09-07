@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrderNumberBySecret = void 0;
-const sqlPool = require("@cityssm/mssql-multi-pool");
-const sql = require("mssql");
-const config = require("./config");
-const debug_1 = require("debug");
-const debugSQL = debug_1.debug("mini-shop-db:getOrderNumberBySecret");
-const getOrderNumberBySecret = async (orderSecret) => {
+import * as sqlPool from "@cityssm/mssql-multi-pool";
+import * as sql from "mssql";
+import * as config from "./config.js";
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:getOrderNumberBySecret");
+export const getOrderNumberBySecret = async (orderSecret) => {
     try {
         const pool = await sqlPool.connect(config.getMSSQLConfig());
         const orderResult = await pool.request()
@@ -25,4 +22,3 @@ const getOrderNumberBySecret = async (orderSecret) => {
     }
     return false;
 };
-exports.getOrderNumberBySecret = getOrderNumberBySecret;

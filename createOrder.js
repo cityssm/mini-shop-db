@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createOrder = exports.insertOrderItem = void 0;
-const sqlPool = require("@cityssm/mssql-multi-pool");
-const sql = require("mssql");
-const config = require("./config");
-const debug_1 = require("debug");
-const debugSQL = debug_1.debug("mini-shop-db:createOrder");
-const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
+import * as sqlPool from "@cityssm/mssql-multi-pool";
+import * as sql from "mssql";
+import * as config from "./config.js";
+import { debug } from "debug";
+const debugSQL = debug("mini-shop-db:createOrder");
+export const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
     const product = config.getProduct(cartItem.productSKU);
     const unitPrice = (typeof (product.price) === "number" ? product.price : parseFloat(cartItem.unitPrice));
     await pool.request()
@@ -29,8 +26,7 @@ const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
             " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
     }
 };
-exports.insertOrderItem = insertOrderItem;
-const createOrder = async (shippingForm) => {
+export const createOrder = async (shippingForm) => {
     const orderNumber = config.getOrderNumberFunction()();
     try {
         const pool = await sqlPool.connect(config.getMSSQLConfig());
@@ -69,7 +65,7 @@ const createOrder = async (shippingForm) => {
             if (!allProducts.hasOwnProperty(cartItem.productSKU)) {
                 continue;
             }
-            await exports.insertOrderItem(pool, orderID, cartIndex, cartItem);
+            await insertOrderItem(pool, orderID, cartIndex, cartItem);
             const product = allProducts[cartItem.productSKU];
             if (product.fees) {
                 for (const feeName of product.fees) {
@@ -101,4 +97,3 @@ const createOrder = async (shippingForm) => {
         };
     }
 };
-exports.createOrder = createOrder;

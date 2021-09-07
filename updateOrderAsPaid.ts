@@ -1,6 +1,6 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config";
+import * as config from "./config.js";
 
 import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid";
 
