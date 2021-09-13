@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/cityssm/mini-shop-db#readme",
   "dependencies": {
-    "@cityssm/mssql-multi-pool": "^2.1.0",
+    "@cityssm/mssql-multi-pool": "^2.1.1",
     "debug": "^4.3.2",
     "mssql": "^7.2.1"
   },
@@ -28,6 +28,6 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-unicorn": "^35.0.0"
+    "eslint-plugin-unicorn": "^36.0.0"
   }
 }
