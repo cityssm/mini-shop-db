@@ -2,11 +2,11 @@ import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
 import * as config from "./config.js";
 
-import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid";
+import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
 
 import type { StoreValidatorReturn } from "./types";
 
-import { debug } from "debug";
+import debug from "debug";
 const debugSQL = debug("mini-shop-db:updateOrderAsPaid");
 
 

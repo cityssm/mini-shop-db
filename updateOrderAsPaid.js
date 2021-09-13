@@ -1,8 +1,8 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
 import * as config from "./config.js";
-import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid";
-import { debug } from "debug";
+import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
+import debug from "debug";
 const debugSQL = debug("mini-shop-db:updateOrderAsPaid");
 export const updateOrderAsPaid = async (validOrder) => {
     if (!validOrder.isValid) {

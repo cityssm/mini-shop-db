@@ -7,7 +7,9 @@
     "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "buildOnSave": true,

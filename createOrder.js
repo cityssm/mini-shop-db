@@ -1,7 +1,7 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
 import * as config from "./config.js";
-import { debug } from "debug";
+import debug from "debug";
 const debugSQL = debug("mini-shop-db:createOrder");
 export const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
     const product = config.getProduct(cartItem.productSKU);

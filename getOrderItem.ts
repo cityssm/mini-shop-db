@@ -4,7 +4,7 @@ import * as config from "./config.js";
 
 import type { OrderItem } from "./types";
 
-import { debug } from "debug";
+import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrderItem");
 
 
