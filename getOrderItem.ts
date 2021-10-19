@@ -30,7 +30,7 @@ export const _getOrderItem = async (config: MiniShopConfig,
     const item = orderItemResult.recordset[0] as OrderItem;
 
     const fieldsResult = await pool.request()
-      .input("orderID", sql.BigInt, orderID)
+      .input("orderID", orderID)
       .input("itemIndex", itemIndex)
       .query("select formFieldName, fieldValue" +
         " from MiniShop.OrderItemFields" +

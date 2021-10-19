@@ -17,8 +17,8 @@ export const _isOrderFoundAndPaid = async (config: MiniShopConfig,
       await sqlPool.connect(config.mssqlConfig);
 
     const orderResult = await pool.request()
-      .input("orderNumber", sql.VarChar(50), orderNumber)
-      .input("orderSecret", sql.UniqueIdentifier, orderSecret)
+      .input("orderNumber", orderNumber)
+      .input("orderSecret", orderSecret)
       .query("select orderID, orderIsPaid from MiniShop.Orders" +
         " where orderIsRefunded = 0 and orderIsDeleted = 0" +
         " and orderNumber = @orderNumber" +

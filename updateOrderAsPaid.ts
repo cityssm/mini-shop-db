@@ -33,8 +33,8 @@ export const _updateOrderAsPaid = async (config:MiniShopConfig,
       await sqlPool.connect(config.mssqlConfig);
 
     await pool.request()
-      .input("paymentID", sql.NVarChar(50), validOrder.paymentID)
-      .input("orderID", sql.BigInt, order.orderID)
+      .input("paymentID", validOrder.paymentID)
+      .input("orderID", order.orderID)
       .query("update MiniShop.Orders" +
         " set paymentID = @paymentID," +
         " paymentTime = getdate()" +
@@ -45,9 +45,9 @@ export const _updateOrderAsPaid = async (config:MiniShopConfig,
       for (const dataName of Object.keys(validOrder.paymentData)) {
 
         await pool.request()
-          .input("orderID", sql.BigInt, order.orderID)
-          .input("dataName", sql.VarChar(30), dataName)
-          .input("dataValue", sql.NVarChar, validOrder.paymentData[dataName])
+          .input("orderID", order.orderID)
+          .input("dataName", dataName)
+          .input("dataValue", validOrder.paymentData[dataName])
           .query("insert into MiniShop.PaymentData (orderID, dataName, dataValue)" +
             " values (@orderID, @dataName, @dataValue)");
       }

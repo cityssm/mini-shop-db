@@ -1,5 +1,4 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrderItem");
 export const _getOrderItem = async (config, orderID, itemIndex) => {
@@ -18,7 +17,7 @@ export const _getOrderItem = async (config, orderID, itemIndex) => {
         }
         const item = orderItemResult.recordset[0];
         const fieldsResult = await pool.request()
-            .input("orderID", sql.BigInt, orderID)
+            .input("orderID", orderID)
             .input("itemIndex", itemIndex)
             .query("select formFieldName, fieldValue" +
             " from MiniShop.OrderItemFields" +

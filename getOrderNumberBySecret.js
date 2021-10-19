@@ -1,12 +1,11 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrderNumberBySecret");
 export const _getOrderNumberBySecret = async (config, orderSecret) => {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
         const orderResult = await pool.request()
-            .input("orderSecret", sql.UniqueIdentifier, orderSecret)
+            .input("orderSecret", orderSecret)
             .query("select orderNumber" +
             " from MiniShop.Orders" +
             " where orderIsRefunded = 0 and orderIsDeleted = 0" +

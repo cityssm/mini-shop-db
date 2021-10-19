@@ -17,7 +17,7 @@ export const _getOrderNumberBySecret = async (config: MiniShopConfig,
     // Get the order record
 
     const orderResult = await pool.request()
-      .input("orderSecret", sql.UniqueIdentifier, orderSecret)
+      .input("orderSecret", orderSecret)
       .query("select orderNumber" +
         " from MiniShop.Orders" +
         " where orderIsRefunded = 0 and orderIsDeleted = 0" +

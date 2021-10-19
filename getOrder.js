@@ -1,14 +1,13 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrder");
 export const _getOrder = async (config, orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
         const orderResult = await pool.request()
-            .input("orderNumber", sql.VarChar(50), orderNumber)
-            .input("orderSecret", sql.UniqueIdentifier, orderSecret)
-            .input("orderIsPaid", sql.Bit, orderIsPaid ? 1 : 0)
+            .input("orderNumber", orderNumber)
+            .input("orderSecret", orderSecret)
+            .input("orderIsPaid", orderIsPaid ? 1 : 0)
             .query("select orderID, orderNumber, orderSecret, orderTime," +
             " shippingName, shippingAddress1, shippingAddress2," +
             " shippingCity, shippingProvince, shippingCountry, shippingPostalCode," +
@@ -27,13 +26,13 @@ export const _getOrder = async (config, orderNumber, orderSecret, orderIsPaid, e
         }
         const order = orderResult.recordset[0];
         const orderItemsResult = await pool.request()
-            .input("orderID", sql.BigInt, order.orderID)
+            .input("orderID", order.orderID)
             .query("select itemIndex, productSKU, unitPrice, quantity, itemTotal" +
             " from MiniShop.OrderItems" +
             " where orderID = @orderID");
         order.items = orderItemsResult.recordset;
         const fieldsResult = await pool.request()
-            .input("orderID", sql.BigInt, order.orderID)
+            .input("orderID", order.orderID)
             .query("select itemIndex, formFieldName, fieldValue" +
             " from MiniShop.OrderItemFields" +
             " where orderID = @orderID");
@@ -55,14 +54,14 @@ export const _getOrder = async (config, orderNumber, orderSecret, orderIsPaid, e
             }
         }
         const orderFeesResult = await pool.request()
-            .input("orderID", sql.BigInt, order.orderID)
+            .input("orderID", order.orderID)
             .query("select feeName, feeTotal" +
             " from MiniShop.OrderFees" +
             " where orderID = @orderID");
         order.fees = orderFeesResult.recordset;
         if (orderIsPaid) {
             const paymentDataResult = await pool.request()
-                .input("orderID", sql.BigInt, order.orderID)
+                .input("orderID", order.orderID)
                 .query("select dataName, dataValue" +
                 " from MiniShop.PaymentData" +
                 " where orderID = @orderID");
