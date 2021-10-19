@@ -1,18 +1,18 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
 
-import type { Order, OrderItemField } from "./types";
+import type { MiniShopConfig, Order, OrderItemField } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrder");
 
 
-export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry: boolean = true) => {
+export const _getOrder = async (config: MiniShopConfig,
+  orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry = true) => {
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     // Get the order record
 
@@ -103,9 +103,12 @@ export const getOrder = async (orderNumber: string, orderSecret: string, orderIs
 
     return order;
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return false;
 };
+
+
+export default _getOrder;

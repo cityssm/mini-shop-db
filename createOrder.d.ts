@@ -1,5 +1,4 @@
-import * as sql from "mssql";
-import type { ShippingForm, CartItem } from "./types";
+import type { MiniShopConfig, ShippingForm } from "./types";
 declare type CreateOrderReturn = {
     success: true;
     orderNumber: string;
@@ -8,6 +7,5 @@ declare type CreateOrderReturn = {
 } | {
     success: false;
 };
-export declare const insertOrderItem: (pool: sql.ConnectionPool, orderID: number, cartIndex: number, cartItem: CartItem) => Promise<void>;
-export declare const createOrder: (shippingForm: ShippingForm) => Promise<CreateOrderReturn>;
-export {};
+export declare const _createOrder: (config: MiniShopConfig, shippingForm: ShippingForm) => Promise<CreateOrderReturn>;
+export default _createOrder;

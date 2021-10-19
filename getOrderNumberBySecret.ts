@@ -1,16 +1,18 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
+
+import type { MiniShopConfig } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrderNumberBySecret");
 
 
-export const getOrderNumberBySecret = async (orderSecret: string) => {
+export const _getOrderNumberBySecret = async (config: MiniShopConfig,
+  orderSecret: string) => {
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     // Get the order record
 
@@ -27,9 +29,12 @@ export const getOrderNumberBySecret = async (orderSecret: string) => {
 
     return orderResult.recordset[0].orderNumber as string;
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return false;
 };
+
+
+export default _getOrderNumberBySecret;

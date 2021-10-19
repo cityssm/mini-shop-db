@@ -3,9 +3,9 @@ import * as sql from "mssql";
 import * as config from "./config.js";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:createOrder");
-export const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
+const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
     const product = config.getProduct(cartItem.productSKU);
-    const unitPrice = (typeof (product.price) === "number" ? product.price : parseFloat(cartItem.unitPrice));
+    const unitPrice = (typeof (product.price) === "number" ? product.price : Number.parseFloat(cartItem.unitPrice));
     await pool.request()
         .input("orderID", sql.BigInt, orderID)
         .input("itemIndex", sql.TinyInt, cartIndex)
@@ -26,10 +26,11 @@ export const insertOrderItem = async (pool, orderID, cartIndex, cartItem) => {
             " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
     }
 };
-export const createOrder = async (shippingForm) => {
-    const orderNumber = config.getOrderNumberFunction()();
+export const _createOrder = async (config, shippingForm) => {
+    const orderNumberFunction = config.orderNumberFunction;
+    const orderNumber = orderNumberFunction();
     try {
-        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.mssqlConfig);
         const orderResult = await pool.request()
             .input("orderNumber", sql.VarChar(50), orderNumber)
             .input("shippingName", sql.NVarChar(100), shippingForm.fullName)
@@ -56,13 +57,13 @@ export const createOrder = async (shippingForm) => {
         const orderSecret = orderResult.recordset[0].orderSecret;
         const orderTime = orderResult.recordset[0].orderTime;
         const feeTotals = {};
-        const allProducts = config.getProducts();
+        const allProducts = config.products;
         for (let cartIndex = 0; cartIndex < shippingForm.cartItems.length; cartIndex += 1) {
             if (cartIndex > 255) {
                 break;
             }
             const cartItem = shippingForm.cartItems[cartIndex];
-            if (!allProducts.hasOwnProperty(cartItem.productSKU)) {
+            if (!Object.prototype.hasOwnProperty.call(allProducts, cartItem.productSKU)) {
                 continue;
             }
             await insertOrderItem(pool, orderID, cartIndex, cartItem);
@@ -70,7 +71,7 @@ export const createOrder = async (shippingForm) => {
             if (product.fees) {
                 for (const feeName of product.fees) {
                     feeTotals[feeName] = (feeTotals[feeName] || 0) +
-                        config.getFee(feeName).feeCalculation(product);
+                        config.fees[feeName].feeCalculation(product);
                 }
             }
         }
@@ -90,10 +91,11 @@ export const createOrder = async (shippingForm) => {
             orderTime
         };
     }
-    catch (e) {
-        debugSQL(e);
+    catch (error) {
+        debugSQL(error);
         return {
             success: false
         };
     }
 };
+export default _createOrder;

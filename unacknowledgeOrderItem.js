@@ -1,10 +1,9 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as config from "./config.js";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:unacknowledgeOrderItem");
-export const unacknowledgeOrderItem = async (orderID, itemIndex) => {
+export const _unacknowledgeOrderItem = async (config, orderID, itemIndex) => {
     try {
-        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.mssqlConfig);
         const result = await pool.request()
             .input("orderID", orderID)
             .input("itemIndex", itemIndex)
@@ -15,8 +14,9 @@ export const unacknowledgeOrderItem = async (orderID, itemIndex) => {
             " and itemIndex = @itemIndex");
         return result.rowsAffected[0] === 1;
     }
-    catch (e) {
-        debugSQL(e);
+    catch (error) {
+        debugSQL(error);
     }
     return false;
 };
+export default _unacknowledgeOrderItem;

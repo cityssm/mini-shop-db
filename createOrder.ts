@@ -2,7 +2,7 @@ import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
 import * as config from "./config.js";
 
-import type { ShippingForm, CartItem } from "./types";
+import type { MiniShopConfig, ShippingForm, CartItem } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:createOrder");
@@ -17,11 +17,11 @@ type CreateOrderReturn = {
 };
 
 
-export const insertOrderItem = async (pool: sql.ConnectionPool, orderID: number, cartIndex: number, cartItem: CartItem) => {
+const insertOrderItem = async (pool: sql.ConnectionPool, orderID: number, cartIndex: number, cartItem: CartItem) => {
 
   const product = config.getProduct(cartItem.productSKU);
 
-  const unitPrice = (typeof (product.price) === "number" ? product.price : parseFloat(cartItem.unitPrice));
+  const unitPrice = (typeof (product.price) === "number" ? product.price : Number.parseFloat(cartItem.unitPrice));
 
   // Create the item record
   await pool.request()
@@ -50,14 +50,16 @@ export const insertOrderItem = async (pool: sql.ConnectionPool, orderID: number,
 };
 
 
-export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrderReturn> => {
+export const _createOrder = async (config: MiniShopConfig,
+  shippingForm: ShippingForm): Promise<CreateOrderReturn> => {
 
-  const orderNumber = config.getOrderNumberFunction()();
+  const orderNumberFunction = config.orderNumberFunction;
+  const orderNumber = orderNumberFunction();
 
   try {
 
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     // Create the Order record
 
@@ -96,7 +98,7 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
       [feeName: string]: number;
     } = {};
 
-    const allProducts = config.getProducts();
+    const allProducts = config.products;
 
     for (let cartIndex = 0; cartIndex < shippingForm.cartItems.length; cartIndex += 1) {
 
@@ -108,7 +110,7 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
       const cartItem = shippingForm.cartItems[cartIndex];
 
       // Ignore invalid SKUs
-      if (!allProducts.hasOwnProperty(cartItem.productSKU)) {
+      if (!Object.prototype.hasOwnProperty.call(allProducts, cartItem.productSKU)) {
         continue;
       }
 
@@ -122,7 +124,7 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
         for (const feeName of product.fees) {
 
           feeTotals[feeName] = (feeTotals[feeName] || 0) +
-            config.getFee(feeName).feeCalculation(product);
+            config.fees[feeName].feeCalculation(product);
         }
       }
     }
@@ -146,10 +148,13 @@ export const createOrder = async (shippingForm: ShippingForm): Promise<CreateOrd
       orderTime
     };
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
     return {
       success: false
     };
   }
 };
+
+
+export default _createOrder;

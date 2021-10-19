@@ -1,18 +1,18 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
 
-import type { OrderItem } from "./types";
+import type { MiniShopConfig, OrderItem } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrderItem");
 
 
-export const getOrderItem = async (orderID: number | string, itemIndex: number | string) => {
+export const _getOrderItem = async (config: MiniShopConfig,
+  orderID: number | string, itemIndex: number | string) => {
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     const orderItemResult = await pool.request()
       .input("orderID", orderID)
@@ -41,9 +41,12 @@ export const getOrderItem = async (orderID: number | string, itemIndex: number |
 
     return item;
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return false;
 };
+
+
+export default _getOrderItem;

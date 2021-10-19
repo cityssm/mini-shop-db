@@ -1,13 +1,12 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as config from "./config.js";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:acknowledgeOrderItem");
-export const acknowledgeOrderItem = async (orderID, itemIndex, acknowledgeValues) => {
+export const _acknowledgeOrderItem = async (config, orderID, itemIndex, acknowledgeValues) => {
     try {
-        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.mssqlConfig);
         const result = await pool.request()
             .input("acknowledgedUser", acknowledgeValues.acknowledgedUser)
-            .input("acknowledgedTime", acknowledgeValues.hasOwnProperty("acknowledgedTime") ? acknowledgeValues.acknowledgedTime : new Date())
+            .input("acknowledgedTime", Object.prototype.hasOwnProperty.call(acknowledgeValues, "acknowledgedTime") ? acknowledgeValues.acknowledgedTime : new Date())
             .input("orderID", orderID)
             .input("itemIndex", itemIndex)
             .query("update MiniShop.OrderItems" +
@@ -17,8 +16,9 @@ export const acknowledgeOrderItem = async (orderID, itemIndex, acknowledgeValues
             " and itemIndex = @itemIndex");
         return result.rowsAffected[0] === 1;
     }
-    catch (e) {
-        debugSQL(e);
+    catch (error) {
+        debugSQL(error);
     }
     return false;
 };
+export default _acknowledgeOrderItem;

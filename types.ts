@@ -1,3 +1,12 @@
+import type { config as MSSQLConfig } from "mssql";
+
+export interface MiniShopConfig {
+  mssqlConfig?: MSSQLConfig;
+  orderNumberFunction?: () => string;
+  products?: { [productSKU: string]: Product };
+  fees?: { [feeName: string]: Fee };
+}
+
 export interface ShippingForm {
   fullName: string;
   address: string;
@@ -102,6 +111,14 @@ export interface Fee {
   feeSKU?: string;
   feeName: string;
   feeCalculation: (product: Product) => number;
+}
+
+
+export interface Config {
+  mssqlConfig: MSSQLConfig;
+  orderNumberFunction: () => string;
+  products: { [productSKU: string]: Product };
+  fees: { [feeName: string]: Fee };
 }
 
 

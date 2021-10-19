@@ -1,16 +1,17 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
 
-import { isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
+import type { MiniShopConfig, StoreValidatorReturn } from "./types";
 
-import type { StoreValidatorReturn } from "./types";
+import { _isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
+
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:updateOrderAsPaid");
 
 
-export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promise<boolean> => {
+export const _updateOrderAsPaid = async (config:MiniShopConfig,
+  validOrder: StoreValidatorReturn): Promise<boolean> => {
 
   if (!validOrder.isValid) {
     return false;
@@ -18,7 +19,7 @@ export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promi
 
   // Check if the order can be marked as paid
 
-  const order = await isOrderFoundAndPaid(validOrder.orderNumber, validOrder.orderSecret);
+  const order = await _isOrderFoundAndPaid(config, validOrder.orderNumber, validOrder.orderSecret);
 
   if (!order.found) {
     return false;
@@ -29,7 +30,7 @@ export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promi
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     await pool.request()
       .input("paymentID", sql.NVarChar(50), validOrder.paymentID)
@@ -54,9 +55,12 @@ export const updateOrderAsPaid = async (validOrder: StoreValidatorReturn): Promi
 
     return true;
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return false;
 };
+
+
+export default _updateOrderAsPaid;

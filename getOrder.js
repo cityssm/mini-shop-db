@@ -1,11 +1,10 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrder");
-export const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
+export const _getOrder = async (config, orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
     try {
-        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.mssqlConfig);
         const orderResult = await pool.request()
             .input("orderNumber", sql.VarChar(50), orderNumber)
             .input("orderSecret", sql.UniqueIdentifier, orderSecret)
@@ -71,8 +70,9 @@ export const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExp
         }
         return order;
     }
-    catch (e) {
-        debugSQL(e);
+    catch (error) {
+        debugSQL(error);
     }
     return false;
 };
+export default _getOrder;

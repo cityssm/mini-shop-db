@@ -1,18 +1,20 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
+
+import type { MiniShopConfig } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:isOrderFoundAndPaid");
 
 
-export const isOrderFoundAndPaid = async (orderNumber: string, orderSecret: string): Promise<{
+export const _isOrderFoundAndPaid = async (config: MiniShopConfig,
+  orderNumber: string, orderSecret: string): Promise<{
   found: boolean; paid: boolean; orderID?: number;
 }> => {
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     const orderResult = await pool.request()
       .input("orderNumber", sql.VarChar(50), orderNumber)
@@ -36,8 +38,8 @@ export const isOrderFoundAndPaid = async (orderNumber: string, orderSecret: stri
       };
     }
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return {
@@ -45,3 +47,6 @@ export const isOrderFoundAndPaid = async (orderNumber: string, orderSecret: stri
     paid: false
   };
 };
+
+
+export default _isOrderFoundAndPaid;

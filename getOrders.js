@@ -1,11 +1,9 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as config from "./config.js";
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrders");
-;
-export const getOrders = async (filters) => {
+export const _getOrders = async (config, filters) => {
     try {
-        const pool = await sqlPool.connect(config.getMSSQLConfig());
+        const pool = await sqlPool.connect(config.mssqlConfig);
         let sql = "select o.orderID, o.orderNumber, o.orderTime," +
             " o.shippingName, o.shippingAddress1, o.shippingAddress2, o.shippingCity, o.shippingProvince, o.shippingCountry, o.shippingPostalCode," +
             " o.shippingEmailAddress, o.shippingPhoneNumberDay, o.shippingPhoneNumberEvening," +
@@ -18,16 +16,16 @@ export const getOrders = async (filters) => {
             " left join MiniShop.Orders o on i.orderID = o.orderID" +
             " left join MiniShop.OrderItemFields f on i.orderID = f.orderID and i.itemIndex = f.itemIndex" +
             " where o.orderIsDeleted = 0";
-        if (filters.hasOwnProperty("productSKUs")) {
+        if (Object.prototype.hasOwnProperty.call(filters, "productSKUs")) {
             sql += " and i.productSKU in ('" + filters.productSKUs.join("','") + "')";
         }
-        if (filters.hasOwnProperty("orderIsPaid")) {
+        if (Object.prototype.hasOwnProperty.call(filters, "orderIsPaid")) {
             sql += " and o.orderIsPaid = " + filters.orderIsPaid.toString();
         }
-        if (filters.hasOwnProperty("orderIsRefunded")) {
+        if (Object.prototype.hasOwnProperty.call(filters, "orderIsRefunded")) {
             sql += " and o.orderIsRefunded = " + filters.orderIsRefunded.toString();
         }
-        if (filters.hasOwnProperty("orderTimeMaxAgeDays")) {
+        if (Object.prototype.hasOwnProperty.call(filters, "orderTimeMaxAgeDays")) {
             sql += " and datediff(day, orderTime, getdate()) <= " + filters.orderTimeMaxAgeDays.toString();
         }
         sql += " order by o.orderID desc, i.itemIndex asc, f.formFieldName";
@@ -38,16 +36,16 @@ export const getOrders = async (filters) => {
         }
         const rawOrders = rawResult.recordset;
         const orders = [];
-        let order = null;
-        let item = null;
+        let order;
+        let item;
         for (const rawOrder of rawOrders) {
             if (order !== null && order.orderID !== rawOrder.orderID) {
                 order.items.push(item);
-                item = null;
+                item = undefined;
                 orders.push(order);
-                order = null;
+                order = undefined;
             }
-            if (order === null) {
+            if (order === undefined) {
                 order = {
                     orderID: rawOrder.orderID,
                     orderNumber: rawOrder.orderNumber,
@@ -75,9 +73,9 @@ export const getOrders = async (filters) => {
             }
             if (item !== null && item.itemIndex !== rawOrder.itemIndex) {
                 order.items.push(item);
-                item = null;
+                item = undefined;
             }
-            if (item === null) {
+            if (item === undefined) {
                 item = {
                     itemIndex: rawOrder.itemIndex,
                     productSKU: rawOrder.productSKU,
@@ -101,8 +99,9 @@ export const getOrders = async (filters) => {
         orders.push(order);
         return orders;
     }
-    catch (e) {
-        debugSQL(e);
+    catch (error) {
+        debugSQL(error);
     }
     return [];
 };
+export default _getOrders;

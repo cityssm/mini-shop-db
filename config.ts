@@ -7,7 +7,7 @@ import type * as types from "./types";
  */
 
 
-let _mssqlConfig: MSSQLConfig = null;
+let _mssqlConfig: MSSQLConfig;
 
 
 export function setMSSQLConfig(mssqlConfig: MSSQLConfig) {
@@ -25,7 +25,7 @@ export function getMSSQLConfig() {
  */
 
 
-let _orderNumberFunction: () => string = null;
+let _orderNumberFunction: () => string;
 
 
 export function setOrderNumberFunction(orderNumberFunction: () => string) {

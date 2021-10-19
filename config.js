@@ -1,11 +1,11 @@
-let _mssqlConfig = null;
+let _mssqlConfig;
 export function setMSSQLConfig(mssqlConfig) {
     _mssqlConfig = mssqlConfig;
 }
 export function getMSSQLConfig() {
     return _mssqlConfig;
 }
-let _orderNumberFunction = null;
+let _orderNumberFunction;
 export function setOrderNumberFunction(orderNumberFunction) {
     _orderNumberFunction = orderNumberFunction;
 }

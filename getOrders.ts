@@ -1,8 +1,7 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
 import * as sql from "mssql";
-import * as config from "./config.js";
 
-import type { Order, OrderItem } from "./types";
+import type { MiniShopConfig, Order, OrderItem } from "./types";
 
 import debug from "debug";
 const debugSQL = debug("mini-shop-db:getOrders");
@@ -13,7 +12,7 @@ export interface GetOrderFilters {
   orderIsPaid?: 0 | 1;
   orderIsRefunded?: 0 | 1;
   orderTimeMaxAgeDays?: number;
-};
+}
 
 
 interface RawOrder {
@@ -57,11 +56,12 @@ interface RawOrder {
 }
 
 
-export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
+export const _getOrders = async (config: MiniShopConfig,
+  filters: GetOrderFilters): Promise<Order[]> => {
 
   try {
     const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.getMSSQLConfig());
+      await sqlPool.connect(config.mssqlConfig);
 
     let sql = "select o.orderID, o.orderNumber, o.orderTime," +
       " o.shippingName, o.shippingAddress1, o.shippingAddress2, o.shippingCity, o.shippingProvince, o.shippingCountry, o.shippingPostalCode," +
@@ -76,19 +76,19 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
       " left join MiniShop.OrderItemFields f on i.orderID = f.orderID and i.itemIndex = f.itemIndex" +
       " where o.orderIsDeleted = 0";
 
-    if (filters.hasOwnProperty("productSKUs")) {
+    if (Object.prototype.hasOwnProperty.call(filters, "productSKUs")) {
       sql += " and i.productSKU in ('" + filters.productSKUs.join("','") + "')";
     }
 
-    if (filters.hasOwnProperty("orderIsPaid")) {
+    if (Object.prototype.hasOwnProperty.call(filters, "orderIsPaid")) {
       sql += " and o.orderIsPaid = " + filters.orderIsPaid.toString();
     }
 
-    if (filters.hasOwnProperty("orderIsRefunded")) {
+    if (Object.prototype.hasOwnProperty.call(filters, "orderIsRefunded")) {
       sql += " and o.orderIsRefunded = " + filters.orderIsRefunded.toString();
     }
 
-    if (filters.hasOwnProperty("orderTimeMaxAgeDays")) {
+    if (Object.prototype.hasOwnProperty.call(filters, "orderTimeMaxAgeDays")) {
       sql += " and datediff(day, orderTime, getdate()) <= " + filters.orderTimeMaxAgeDays.toString();
     }
 
@@ -105,8 +105,8 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
 
     const orders: Order[] = [];
 
-    let order: Order = null;
-    let item: OrderItem = null;
+    let order: Order;
+    let item: OrderItem;
 
     for (const rawOrder of rawOrders) {
 
@@ -116,13 +116,13 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
 
       if (order !== null && order.orderID !== rawOrder.orderID) {
         order.items.push(item);
-        item = null;
+        item = undefined;
 
         orders.push(order);
-        order = null;
+        order = undefined;
       }
 
-      if (order === null) {
+      if (order === undefined) {
         order = {
           orderID: rawOrder.orderID,
           orderNumber: rawOrder.orderNumber,
@@ -159,10 +159,10 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
 
       if (item !== null && item.itemIndex !== rawOrder.itemIndex) {
         order.items.push(item);
-        item = null;
+        item = undefined;
       }
 
-      if (item === null) {
+      if (item === undefined) {
         item = {
           itemIndex: rawOrder.itemIndex,
           productSKU: rawOrder.productSKU,
@@ -193,9 +193,12 @@ export const getOrders = async (filters: GetOrderFilters): Promise<Order[]> => {
 
     return orders;
 
-  } catch (e) {
-    debugSQL(e);
+  } catch (error) {
+    debugSQL(error);
   }
 
   return [];
 };
+
+
+export default _getOrders;
