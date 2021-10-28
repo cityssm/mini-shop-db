@@ -27,7 +27,7 @@ export const _updateOrderAsPaid = async (config, validOrder) => {
                 await pool.request()
                     .input("orderID", order.orderID)
                     .input("dataName", dataName)
-                    .input("dataValue", validOrder.paymentData[dataName])
+                    .input("dataValue", validOrder.paymentData[dataName] || "")
                     .query("insert into MiniShop.PaymentData (orderID, dataName, dataValue)" +
                     " values (@orderID, @dataName, @dataValue)");
             }
