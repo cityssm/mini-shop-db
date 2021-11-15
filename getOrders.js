@@ -39,13 +39,13 @@ export const _getOrders = async (config, filters) => {
         let order;
         let item;
         for (const rawOrder of rawOrders) {
-            if (order !== null && order.orderID !== rawOrder.orderID) {
+            if (order && order.orderID !== rawOrder.orderID) {
                 order.items.push(item);
                 item = undefined;
                 orders.push(order);
                 order = undefined;
             }
-            if (order === undefined) {
+            if (!order) {
                 order = {
                     orderID: rawOrder.orderID,
                     orderNumber: rawOrder.orderNumber,
@@ -71,11 +71,11 @@ export const _getOrders = async (config, filters) => {
                     items: []
                 };
             }
-            if (item !== null && item.itemIndex !== rawOrder.itemIndex) {
+            if (item && item.itemIndex !== rawOrder.itemIndex) {
                 order.items.push(item);
                 item = undefined;
             }
-            if (item === undefined) {
+            if (!item) {
                 item = {
                     itemIndex: rawOrder.itemIndex,
                     productSKU: rawOrder.productSKU,
@@ -88,7 +88,7 @@ export const _getOrders = async (config, filters) => {
                     itemIsAcknowledged: rawOrder.itemIsAcknowledged
                 };
             }
-            if (rawOrder.formFieldName !== null) {
+            if (rawOrder.formFieldName) {
                 item.fields.push({
                     formFieldName: rawOrder.formFieldName,
                     fieldValue: rawOrder.fieldValue

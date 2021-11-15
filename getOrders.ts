@@ -114,7 +114,7 @@ export const _getOrders = async (config: MiniShopConfig,
        * Order
        */
 
-      if (order !== null && order.orderID !== rawOrder.orderID) {
+      if (order && order.orderID !== rawOrder.orderID) {
         order.items.push(item);
         item = undefined;
 
@@ -122,7 +122,7 @@ export const _getOrders = async (config: MiniShopConfig,
         order = undefined;
       }
 
-      if (order === undefined) {
+      if (!order) {
         order = {
           orderID: rawOrder.orderID,
           orderNumber: rawOrder.orderNumber,
@@ -157,12 +157,12 @@ export const _getOrders = async (config: MiniShopConfig,
        * Item
        */
 
-      if (item !== null && item.itemIndex !== rawOrder.itemIndex) {
+      if (item && item.itemIndex !== rawOrder.itemIndex) {
         order.items.push(item);
         item = undefined;
       }
 
-      if (item === undefined) {
+      if (!item) {
         item = {
           itemIndex: rawOrder.itemIndex,
           productSKU: rawOrder.productSKU,
@@ -180,7 +180,7 @@ export const _getOrders = async (config: MiniShopConfig,
        * Item Field
        */
 
-      if (rawOrder.formFieldName !== null) {
+      if (rawOrder.formFieldName) {
         item.fields.push({
           formFieldName: rawOrder.formFieldName,
           fieldValue: rawOrder.fieldValue
