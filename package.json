@@ -1,11 +1,14 @@
 {
   "name": "@cityssm/mini-shop-db",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "SQL query wrappers used by cityssm/mini-shop",
   "type": "module",
   "exports": "./index.js",
   "types": "./index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "test": "cross-env NODE_ENV=dev DEBUG=mini-shop-db:* mocha --timeout 10000",
+    "coverage": "cross-env NODE_ENV=dev DEBUG=mini-shop-db:* c8 --reporter=lcov --reporter=text --reporter=text-summary mocha --timeout 10000"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cityssm/mini-shop-db.git"
@@ -19,17 +22,20 @@
   "dependencies": {
     "@cityssm/mssql-multi-pool": "^2.1.2",
     "debug": "^4.3.2",
+    "exit-hook": "^3.0.0",
     "mssql": "^7.2.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/mocha": "^9.0.0",
     "@types/mssql": "^7.1.4",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "@typescript-eslint/parser": "^5.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
-    "eslint-plugin-unicorn": "^37.0.1"
+    "eslint-plugin-unicorn": "^38.0.1"
   }
 }
