@@ -27,7 +27,7 @@ before_test:
   - sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'
   # Initialize the database
   - sqlcmd -S localhost -U SA -P Password12! -Q 'create database MiniShop'
-  - sqlcmd -S localhost -U SA -P Password12! -d MiniShop -i scripts/createTables.sql
+  - sqlcmd -S localhost -U SA -P Password12! -d MiniShop -i scripts/createTables.sql -I
 
 test_script:
   - cp ./test/config.appveyor.js ./test/config.test.js
