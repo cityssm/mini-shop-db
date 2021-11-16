@@ -1,0 +1,45 @@
+image: ubuntu
+platform: Any CPU
+
+environment:
+  CODACY_PROJECT_TOKEN:
+    secure: TSKUjdY7hMwuw4VGt5zVyQ4Ossnh8HjEmWOUhKIphzWizMOXzjJaFdm7gXqkKqG2
+  CC_TEST_REPORTER_ID:
+    secure: ARE6Pd0g9hy2p5+pcTcClj34+018p1hxpR2x20k437SCV/wji0e0wn9ukEeYRhITmiuwh48HvTnN7hST6rWjARXU4+TqzB6rbHTnvpFcr9o=
+
+stack: "node 14"
+
+services:
+  - mssql
+
+install:
+  - npm install -g npm@7
+  # install modules
+  - sh: npm ci
+  - sh: npm install -g mocha c8 cross-env
+
+before_test:
+  # Download codeclimate test report
+  - sh: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./codeclimate-test-reporter
+  - sh: chmod +x ./codeclimate-test-reporter
+  # Ensure SQL Server is up and running
+  - sleep 10
+  - sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'
+  # Initialize the database
+  - sqlcmd -S localhost -U SA -P Password12! -Q 'create database MiniShop'
+  - sqlcmd -S localhost -U SA -P Password12! -d MiniShop -i scripts/createTables.sql
+
+test_script:
+  - cp ./test/config.appveyor.js ./test/config.test.js
+  # Do actual test
+  - cross-env NODE_ENV=dev DEBUG=mini-shop-db:* c8 --reporter=lcov mocha --timeout 30000
+
+after_test:
+  # Send test result to codeclimate
+  - sh: ./codeclimate-test-reporter before-build
+  - sh: ./codeclimate-test-reporter after-build -t lcov --exit-code $?
+  # Send test result to Codacy
+  - sh: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./coverage/lcov.info
+
+# Don't actually build.
+build: off
