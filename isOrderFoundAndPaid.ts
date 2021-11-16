@@ -1,5 +1,4 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 
 import type { MiniShopConfig } from "./types";
 
@@ -13,8 +12,7 @@ export const _isOrderFoundAndPaid = async (config: MiniShopConfig,
 }> => {
 
   try {
-    const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.mssqlConfig);
+    const pool = await sqlPool.connect(config.mssqlConfig);
 
     const orderResult = await pool.request()
       .input("orderNumber", orderNumber)

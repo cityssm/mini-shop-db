@@ -1,5 +1,4 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 
 import type { MiniShopConfig } from "./types.js";
 
@@ -14,8 +13,7 @@ export const _acknowledgeOrderItem = async (config: MiniShopConfig,
 }) => {
 
   try {
-    const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.mssqlConfig);
+    const pool = await sqlPool.connect(config.mssqlConfig);
 
     const result = await pool.request()
       .input("acknowledgedUser", acknowledgeValues.acknowledgedUser)

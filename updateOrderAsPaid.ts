@@ -1,5 +1,4 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 
 import type { MiniShopConfig, StoreValidatorReturn } from "./types";
 
@@ -29,8 +28,7 @@ export const _updateOrderAsPaid = async (config:MiniShopConfig,
   }
 
   try {
-    const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.mssqlConfig);
+    const pool = await sqlPool.connect(config.mssqlConfig);
 
     await pool.request()
       .input("paymentID", validOrder.paymentID)
