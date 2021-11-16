@@ -18,8 +18,12 @@ export declare const createOrder: (shippingForm: types.ShippingForm) => Promise<
 } | {
     success: false;
 }>;
+import { DeleteDetails } from "./deleteOrder.js";
+export declare const deleteOrder: (orderID: number, deleteDetails: DeleteDetails) => Promise<boolean>;
 export declare const unacknowledgeOrderItem: (orderID: number | string, itemIndex: number | string) => Promise<boolean>;
 export declare const updateOrderAsPaid: (validOrder: types.StoreValidatorReturn) => Promise<boolean>;
+import { RefundDetails } from "./updateOrderAsRefunded.js";
+export declare const updateOrderAsRefunded: (orderNumber: string, orderSecret: string, refundDetails: RefundDetails) => Promise<boolean>;
 export declare const getOrder: (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry?: boolean) => Promise<false | types.Order>;
 export declare const getOrderItem: (orderID: number | string, itemIndex: number | string) => Promise<false | types.OrderItem>;
 export declare const getOrderNumberBySecret: (orderSecret: string) => Promise<string | false>;
@@ -30,3 +34,4 @@ export declare const isOrderFoundAndPaid: (orderNumber: string, orderSecret: str
     paid: boolean;
     orderID?: number;
 }>;
+export declare const releaseAll: () => void;

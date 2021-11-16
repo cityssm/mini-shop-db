@@ -1,3 +1,6 @@
+import exitHook from "exit-hook" ;
+import { releaseAll as pool_releaseAll } from "@cityssm/mssql-multi-pool";
+
 import type * as types from "./types";
 import type { config as MSSQLConfig } from "mssql";
 
@@ -43,6 +46,11 @@ export const createOrder = async (shippingForm: types.ShippingForm) => {
   return await _createOrder(config, shippingForm);
 };
 
+import { _deleteOrder, DeleteDetails } from "./deleteOrder.js";
+export const deleteOrder = async (orderID: number, deleteDetails: DeleteDetails) => {
+  return await _deleteOrder(config, orderID, deleteDetails);
+};
+
 import { _unacknowledgeOrderItem } from "./unacknowledgeOrderItem.js";
 export const unacknowledgeOrderItem = async (orderID: number | string, itemIndex: number | string) => {
   return await _unacknowledgeOrderItem(config, orderID, itemIndex);
@@ -51,6 +59,11 @@ export const unacknowledgeOrderItem = async (orderID: number | string, itemIndex
 import { _updateOrderAsPaid } from "./updateOrderAsPaid.js";
 export const updateOrderAsPaid = async (validOrder: types.StoreValidatorReturn) => {
   return await _updateOrderAsPaid(config, validOrder);
+};
+
+import { _updateOrderAsRefunded, RefundDetails } from "./updateOrderAsRefunded.js";
+export const updateOrderAsRefunded = async (orderNumber: string, orderSecret: string, refundDetails: RefundDetails) => {
+  return await _updateOrderAsRefunded(config, orderNumber, orderSecret, refundDetails);
 };
 
 /*
@@ -81,3 +94,11 @@ import { _isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
 export const isOrderFoundAndPaid = async (orderNumber: string, orderSecret: string) => {
   return await _isOrderFoundAndPaid(config, orderNumber, orderSecret);
 };
+
+export const releaseAll = () => {
+  pool_releaseAll();
+}
+
+if (process) {
+  exitHook(releaseAll);
+}
