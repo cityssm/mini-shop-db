@@ -1,6 +1,6 @@
 import * as sqlPool from "@cityssm/mssql-multi-pool";
-import * as sql from "mssql";
 
+import type * as sql from "mssql";
 import type { MiniShopConfig, ShippingForm, CartItem } from "./types";
 
 import debug from "debug";
@@ -34,18 +34,20 @@ const insertOrderItem = async (config: MiniShopConfig, pool: sql.ConnectionPool,
       " values (@orderID, @itemIndex, @productSKU, @unitPrice, @quantity)");
 
   // Create the item field records
-  for (const formField of product.formFieldsToSave) {
 
-    await pool.request()
-      .input("orderID", orderID)
-      .input("itemIndex", cartIndex)
-      .input("formFieldName", formField.formFieldName)
-      .input("fieldValue", cartItem[formField.formFieldName] || "")
-      .query("insert into MiniShop.OrderItemFields (" +
-        "orderID, itemIndex, formFieldName, fieldValue)" +
-        " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
+  if (product.formFieldsToSave) {
+    for (const formField of product.formFieldsToSave) {
+
+      await pool.request()
+        .input("orderID", orderID)
+        .input("itemIndex", cartIndex)
+        .input("formFieldName", formField.formFieldName)
+        .input("fieldValue", cartItem[formField.formFieldName] || "")
+        .query("insert into MiniShop.OrderItemFields (" +
+          "orderID, itemIndex, formFieldName, fieldValue)" +
+          " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
+    }
   }
-
 };
 
 
@@ -57,8 +59,7 @@ export const _createOrder = async (config: MiniShopConfig,
 
   try {
 
-    const pool: sql.ConnectionPool =
-      await sqlPool.connect(config.mssqlConfig);
+    const pool = await sqlPool.connect(config.mssqlConfig);
 
     // Create the Order record
 
@@ -110,6 +111,7 @@ export const _createOrder = async (config: MiniShopConfig,
 
       // Ignore invalid SKUs
       if (!Object.prototype.hasOwnProperty.call(allProducts, cartItem.productSKU)) {
+        debugSQL("Invalid SKU: " + cartItem.productSKU);
         continue;
       }
 

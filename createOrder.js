@@ -13,15 +13,17 @@ const insertOrderItem = async (config, pool, orderID, cartIndex, cartItem) => {
         .query("insert into MiniShop.OrderItems (" +
         "orderID, itemIndex, productSKU, unitPrice, quantity)" +
         " values (@orderID, @itemIndex, @productSKU, @unitPrice, @quantity)");
-    for (const formField of product.formFieldsToSave) {
-        await pool.request()
-            .input("orderID", orderID)
-            .input("itemIndex", cartIndex)
-            .input("formFieldName", formField.formFieldName)
-            .input("fieldValue", cartItem[formField.formFieldName] || "")
-            .query("insert into MiniShop.OrderItemFields (" +
-            "orderID, itemIndex, formFieldName, fieldValue)" +
-            " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
+    if (product.formFieldsToSave) {
+        for (const formField of product.formFieldsToSave) {
+            await pool.request()
+                .input("orderID", orderID)
+                .input("itemIndex", cartIndex)
+                .input("formFieldName", formField.formFieldName)
+                .input("fieldValue", cartItem[formField.formFieldName] || "")
+                .query("insert into MiniShop.OrderItemFields (" +
+                "orderID, itemIndex, formFieldName, fieldValue)" +
+                " values (@orderID, @itemIndex, @formFieldName, @fieldValue)");
+        }
     }
 };
 export const _createOrder = async (config, shippingForm) => {
@@ -62,6 +64,7 @@ export const _createOrder = async (config, shippingForm) => {
             }
             const cartItem = shippingForm.cartItems[cartIndex];
             if (!Object.prototype.hasOwnProperty.call(allProducts, cartItem.productSKU)) {
+                debugSQL("Invalid SKU: " + cartItem.productSKU);
                 continue;
             }
             await insertOrderItem(config, pool, orderID, cartIndex, cartItem);
