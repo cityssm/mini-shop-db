@@ -3,7 +3,7 @@ platform: Any CPU
 
 environment:
   CODACY_PROJECT_TOKEN:
-    secure: TSKUjdY7hMwuw4VGt5zVyQ4Ossnh8HjEmWOUhKIphzWizMOXzjJaFdm7gXqkKqG2
+    secure: tq57SNzK2p00DNNC252qPq4kWgFIwyUJ9OcfJJBgxEJ9gVyx8/4Qecxz0xgTX325
   CC_TEST_REPORTER_ID:
     secure: ARE6Pd0g9hy2p5+pcTcClj34+018p1hxpR2x20k437SCV/wji0e0wn9ukEeYRhITmiuwh48HvTnN7hST6rWjARXU4+TqzB6rbHTnvpFcr9o=
 
