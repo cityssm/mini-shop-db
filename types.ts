@@ -114,14 +114,6 @@ export interface Fee {
 }
 
 
-export interface Config {
-  mssqlConfig: MSSQLConfig;
-  orderNumberFunction: () => string;
-  products: { [productSKU: string]: Product };
-  fees: { [feeName: string]: Fee };
-}
-
-
 export type StoreValidatorErrorMessage =
   "noHandler" | "noResult" |
   "missingOrderNumber" | "invalidOrderNumber" |

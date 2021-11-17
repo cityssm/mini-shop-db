@@ -98,16 +98,6 @@ export interface Fee {
     feeName: string;
     feeCalculation: (product: Product) => number;
 }
-export interface Config {
-    mssqlConfig: MSSQLConfig;
-    orderNumberFunction: () => string;
-    products: {
-        [productSKU: string]: Product;
-    };
-    fees: {
-        [feeName: string]: Fee;
-    };
-}
 export declare type StoreValidatorErrorMessage = "noHandler" | "noResult" | "missingOrderNumber" | "invalidOrderNumber" | "missingOrderSecret" | "paymentDeclined";
 export declare type StoreValidatorReturn = {
     isValid: true;
