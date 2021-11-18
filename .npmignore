@@ -1,6 +1,7 @@
 .git
 .github
 .nyc_output
+.snyk
 coverage
 node_modules
 test
