@@ -5,7 +5,7 @@ environment:
   CODACY_PROJECT_TOKEN:
     secure: tq57SNzK2p00DNNC252qPq4kWgFIwyUJ9OcfJJBgxEJ9gVyx8/4Qecxz0xgTX325
   CC_TEST_REPORTER_ID:
-    secure: ARE6Pd0g9hy2p5+pcTcClj34+018p1hxpR2x20k437SCV/wji0e0wn9ukEeYRhITmiuwh48HvTnN7hST6rWjARXU4+TqzB6rbHTnvpFcr9o=
+    secure: tjL4XcJBpvtOVpQUx4l6/E6C1eMMT5qjetEvCA837b0ZAMPJRqPIrFNqoK0znCMqSXkNdCmwyhPUZ4PTV1baZsCvdawKqyFKtpMp7rSkZEA=
 
 stack: "node 14"
 
