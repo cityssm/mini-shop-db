@@ -23,7 +23,7 @@
     "@cityssm/mssql-multi-pool": "^2.1.2",
     "debug": "^4.3.2",
     "exit-hook": "^3.0.0",
-    "mssql": "^7.2.1"
+    "mssql": "^8.0.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
