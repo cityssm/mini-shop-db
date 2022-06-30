@@ -22,6 +22,11 @@ export const _getOrders = async (config, filters) => {
         if (Object.prototype.hasOwnProperty.call(filters, "orderIsPaid")) {
             sql += " and o.orderIsPaid = " + filters.orderIsPaid.toString();
         }
+        if (Object.prototype.hasOwnProperty.call(filters, "itemIsAcknowledged")) {
+            sql += (filters.itemIsAcknowledged === 1
+                ? " and i.acknowledgedTime is not null"
+                : " and i.acknowledgedTime is null");
+        }
         if (Object.prototype.hasOwnProperty.call(filters, "orderIsRefunded")) {
             sql += " and o.orderIsRefunded = " + filters.orderIsRefunded.toString();
         }
