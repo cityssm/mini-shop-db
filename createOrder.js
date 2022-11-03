@@ -33,17 +33,17 @@ export const _createOrder = async (config, shippingForm) => {
         const pool = await sqlPool.connect(config.mssqlConfig);
         const orderResult = await pool.request()
             .input("orderNumber", orderNumber)
-            .input("shippingName", shippingForm.fullName)
-            .input("shippingAddress1", shippingForm.address)
-            .input("shippingAddress2", shippingForm.address2)
-            .input("shippingCity", shippingForm.city)
-            .input("shippingProvince", shippingForm.province)
-            .input("shippingCountry", shippingForm.country)
-            .input("shippingPostalCode", shippingForm.postalCode)
-            .input("shippingEmailAddress", shippingForm.emailAddress)
-            .input("shippingPhoneNumberDay", shippingForm.phoneNumberDay)
-            .input("shippingPhoneNumberEvening", shippingForm.phoneNumberEvening)
-            .input("redirectURL", shippingForm.redirectURL)
+            .input("shippingName", shippingForm.fullName.trim())
+            .input("shippingAddress1", shippingForm.address.trim())
+            .input("shippingAddress2", (shippingForm.address2 || "").trim())
+            .input("shippingCity", shippingForm.city.trim())
+            .input("shippingProvince", shippingForm.province.trim())
+            .input("shippingCountry", (shippingForm.country || "").trim())
+            .input("shippingPostalCode", shippingForm.postalCode.trim())
+            .input("shippingEmailAddress", shippingForm.emailAddress.trim())
+            .input("shippingPhoneNumberDay", shippingForm.phoneNumberDay.trim())
+            .input("shippingPhoneNumberEvening", shippingForm.phoneNumberEvening.trim())
+            .input("redirectURL", (shippingForm.redirectURL || "").trim())
             .query("insert into MiniShop.Orders (" +
             " orderNumber," +
             " shippingName, shippingAddress1, shippingAddress2," +
