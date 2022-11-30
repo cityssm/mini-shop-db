@@ -73,8 +73,8 @@ export const _createOrder = async (config: MiniShopConfig,
       .input("shippingCountry", (shippingForm.country || "").trim())
       .input("shippingPostalCode", shippingForm.postalCode.trim())
       .input("shippingEmailAddress", shippingForm.emailAddress.trim())
-      .input("shippingPhoneNumberDay", shippingForm.phoneNumberDay.trim())
-      .input("shippingPhoneNumberEvening", shippingForm.phoneNumberEvening.trim())
+      .input("shippingPhoneNumberDay", (shippingForm.phoneNumberDay || "").trim())
+      .input("shippingPhoneNumberEvening", (shippingForm.phoneNumberEvening || "").trim())
       .input("redirectURL", (shippingForm.redirectURL || "").trim())
       .query("insert into MiniShop.Orders (" +
         " orderNumber," +
