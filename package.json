@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/mini-shop-db",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "SQL query wrappers used by cityssm/mini-shop",
   "type": "module",
   "exports": "./index.js",
