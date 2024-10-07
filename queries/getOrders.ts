@@ -75,11 +75,11 @@ export default async function _getOrders(
       where o.orderIsDeleted = 0`
 
     if (filters.productSKUs !== undefined) {
-      sql += " and i.productSKU in ('" + filters.productSKUs.join("','") + "')"
+      sql += ` and i.productSKU in ('${filters.productSKUs.join("','")}')`
     }
 
     if (filters.orderIsPaid !== undefined) {
-      sql += ' and o.orderIsPaid = ' + filters.orderIsPaid.toString()
+      sql += ` and o.orderIsPaid = ${filters.orderIsPaid.toString()}`
     }
 
     if (filters.itemIsAcknowledged !== undefined) {
@@ -90,13 +90,11 @@ export default async function _getOrders(
     }
 
     if (filters.orderIsRefunded !== undefined) {
-      sql += ' and o.orderIsRefunded = ' + filters.orderIsRefunded.toString()
+      sql += ` and o.orderIsRefunded = ${filters.orderIsRefunded.toString()}`
     }
 
     if (filters.orderTimeMaxAgeDays !== undefined) {
-      sql +=
-        ' and datediff(day, orderTime, getdate()) <= ' +
-        filters.orderTimeMaxAgeDays.toString()
+      sql += ` and datediff(day, orderTime, getdate()) <= ${filters.orderTimeMaxAgeDays.toString()}`
     }
 
     sql += ' order by o.orderID desc, i.itemIndex asc, f.formFieldName'
