@@ -1,26 +1,22 @@
-import type { config as MSSQLConfig } from "mssql";
+import type { config as MSSQLConfig } from 'mssql';
 export interface MiniShopConfig {
-    mssqlConfig?: MSSQLConfig;
-    orderNumberFunction?: () => string;
-    products?: {
-        [productSKU: string]: Product;
-    };
-    fees?: {
-        [feeName: string]: Fee;
-    };
+    mssqlConfig: MSSQLConfig;
+    orderNumberFunction: () => string;
+    products: Record<string, Product>;
+    fees: Record<string, Fee>;
 }
 export interface ShippingForm {
     fullName: string;
     address: string;
-    address2?: string;
+    address2: string;
     city: string;
     province: string;
-    country?: string;
+    country: string;
     postalCode: string;
     phoneNumberDay: string;
-    phoneNumberEvening?: string;
+    phoneNumberEvening: string;
     emailAddress: string;
-    redirectURL?: string;
+    redirectURL: string;
     cartItems: CartItem[];
 }
 export interface CartItem {
@@ -83,30 +79,26 @@ export interface OrderItemField {
 export interface Product {
     productSKU?: string;
     productName?: string;
-    price: number | "form";
+    price: number | 'form';
     formFieldsToSave?: Array<{
         fieldName?: string;
         formFieldName: string;
     }>;
     fees?: string[];
-    feeTotals?: {
-        [feeName: string]: number;
-    };
+    feeTotals?: Record<string, number>;
 }
 export interface Fee {
     feeSKU?: string;
     feeName: string;
     feeCalculation: (product: Product) => number;
 }
-export declare type StoreValidatorErrorMessage = "noHandler" | "noResult" | "missingOrderNumber" | "invalidOrderNumber" | "missingOrderSecret" | "paymentDeclined";
-export declare type StoreValidatorReturn = {
+export type StoreValidatorErrorMessage = 'noHandler' | 'noResult' | 'missingOrderNumber' | 'invalidOrderNumber' | 'missingOrderSecret' | 'paymentDeclined';
+export type StoreValidatorReturn = {
     isValid: true;
     orderNumber: string;
     orderSecret: string;
     paymentID: string;
-    paymentData?: {
-        [dataName: string]: string;
-    };
+    paymentData?: Record<string, string>;
 } | {
     isValid: false;
     errorCode: StoreValidatorErrorMessage;

@@ -1,68 +1,55 @@
-import exitHook from "exit-hook";
-import { releaseAll as pool_releaseAll } from "@cityssm/mssql-multi-pool";
-let config = {
-    products: {},
-    fees: {}
-};
-export const setConfig = (miniShopConfig) => {
-    config = miniShopConfig;
-};
-export const setMSSQLConfig = (mssqlConfig) => {
-    config.mssqlConfig = mssqlConfig;
-};
-export const setOrderNumberFunction = (orderNumberFunction) => {
-    config.orderNumberFunction = orderNumberFunction;
-};
-export const setFees = (fees) => {
-    config.fees = fees;
-};
-import { _acknowledgeOrderItem } from "./acknowledgeOrderItem.js";
-export const acknowledgeOrderItem = async (orderID, itemIndex, acknowledgeValues) => {
-    return await _acknowledgeOrderItem(config, orderID, itemIndex, acknowledgeValues);
-};
-import { _createOrder } from "./createOrder.js";
-export const createOrder = async (shippingForm) => {
-    return await _createOrder(config, shippingForm);
-};
-import { _deleteOrder } from "./deleteOrder.js";
-export const deleteOrder = async (orderID, deleteDetails) => {
-    return await _deleteOrder(config, orderID, deleteDetails);
-};
-import { _unacknowledgeOrderItem } from "./unacknowledgeOrderItem.js";
-export const unacknowledgeOrderItem = async (orderID, itemIndex) => {
-    return await _unacknowledgeOrderItem(config, orderID, itemIndex);
-};
-import { _updateOrderAsPaid } from "./updateOrderAsPaid.js";
-export const updateOrderAsPaid = async (validOrder) => {
-    return await _updateOrderAsPaid(config, validOrder);
-};
-import { _updateOrderAsRefunded } from "./updateOrderAsRefunded.js";
-export const updateOrderAsRefunded = async (orderNumber, orderSecret, refundDetails) => {
-    return await _updateOrderAsRefunded(config, orderNumber, orderSecret, refundDetails);
-};
-import { _getOrder } from "./getOrder.js";
-export const getOrder = async (orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) => {
-    return await _getOrder(config, orderNumber, orderSecret, orderIsPaid, enforceExpiry);
-};
-import { _getOrderItem } from "./getOrderItem.js";
-export const getOrderItem = async (orderID, itemIndex) => {
-    return await _getOrderItem(config, orderID, itemIndex);
-};
-import { _getOrderNumberBySecret } from "./getOrderNumberBySecret.js";
-export const getOrderNumberBySecret = async (orderSecret) => {
-    return await _getOrderNumberBySecret(config, orderSecret);
-};
-import { _getOrders } from "./getOrders.js";
-export const getOrders = async (filters) => {
-    return await _getOrders(config, filters);
-};
-import { _isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
-export const isOrderFoundAndPaid = async (orderNumber, orderSecret) => {
-    return await _isOrderFoundAndPaid(config, orderNumber, orderSecret);
-};
-export const releaseAll = () => {
-    pool_releaseAll();
-};
-if (process) {
-    exitHook(releaseAll);
+import { releaseAll as pool_releaseAll } from '@cityssm/mssql-multi-pool';
+import exitHook from 'exit-hook';
+import _acknowledgeOrderItem from './queries/acknowledgeOrderItem.js';
+import _createOrder from './queries/createOrder.js';
+import _deleteOrder from './queries/deleteOrder.js';
+import _getOrder from './queries/getOrder.js';
+import _getOrderItem from './queries/getOrderItem.js';
+import _getOrderNumberBySecret from './queries/getOrderNumberBySecret.js';
+import _getOrders from './queries/getOrders.js';
+import _isOrderFoundAndPaid from './queries/isOrderFoundAndPaid.js';
+import _unacknowledgeOrderItem from './queries/unacknowledgeOrderItem.js';
+import _updateOrderAsPaid from './queries/updateOrderAsPaid.js';
+import _updateOrderAsRefunded from './queries/updateOrderAsRefunded.js';
+export default class MiniShopDB {
+    #config;
+    constructor(miniShopConfig) {
+        this.#config = miniShopConfig;
+        exitHook(() => {
+            void pool_releaseAll();
+        });
+    }
+    async acknowledgeOrderItem(orderID, itemIndex, acknowledgeValues) {
+        return await _acknowledgeOrderItem(this.#config, orderID, itemIndex, acknowledgeValues);
+    }
+    async createOrder(shippingForm) {
+        return await _createOrder(this.#config, shippingForm);
+    }
+    async deleteOrder(orderID, deleteDetails) {
+        return await _deleteOrder(this.#config, orderID, deleteDetails);
+    }
+    async unacknowledgeOrderItem(orderID, itemIndex) {
+        return await _unacknowledgeOrderItem(this.#config, orderID, itemIndex);
+    }
+    async updateOrderAsPaid(validOrder) {
+        return await _updateOrderAsPaid(this.#config, validOrder);
+    }
+    async updateOrderAsRefunded(orderNumber, orderSecret, refundDetails) {
+        return await _updateOrderAsRefunded(this.#config, orderNumber, orderSecret, refundDetails);
+    }
+    async getOrder(orderNumber, orderSecret, orderIsPaid, enforceExpiry = true) {
+        return await _getOrder(this.#config, { orderNumber, orderSecret, orderIsPaid }, enforceExpiry);
+    }
+    async getOrderItem(orderID, itemIndex) {
+        return await _getOrderItem(this.#config, orderID, itemIndex);
+    }
+    async getOrderNumberBySecret(orderSecret) {
+        return await _getOrderNumberBySecret(this.#config, orderSecret);
+    }
+    async getOrders(filters) {
+        return await _getOrders(this.#config, filters);
+    }
+    async isOrderFoundAndPaid(orderNumber, orderSecret) {
+        return await _isOrderFoundAndPaid(this.#config, orderNumber, orderSecret);
+    }
 }

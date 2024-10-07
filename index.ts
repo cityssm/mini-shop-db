@@ -1,104 +1,123 @@
-import exitHook from "exit-hook" ;
-import { releaseAll as pool_releaseAll } from "@cityssm/mssql-multi-pool";
+import { releaseAll as pool_releaseAll } from '@cityssm/mssql-multi-pool'
+import exitHook from 'exit-hook'
 
-import type * as types from "./types";
-import type { config as MSSQLConfig } from "mssql";
+import _acknowledgeOrderItem from './queries/acknowledgeOrderItem.js'
+import _createOrder, { type CreateOrderReturn } from './queries/createOrder.js'
+import _deleteOrder, { type DeleteDetails } from './queries/deleteOrder.js'
+import _getOrder from './queries/getOrder.js'
+import _getOrderItem from './queries/getOrderItem.js'
+import _getOrderNumberBySecret from './queries/getOrderNumberBySecret.js'
+import _getOrders, { type GetOrderFilters } from './queries/getOrders.js'
+import _isOrderFoundAndPaid, {
+  type IsOrderFoundAndPaidReturn
+} from './queries/isOrderFoundAndPaid.js'
+import _unacknowledgeOrderItem from './queries/unacknowledgeOrderItem.js'
+import _updateOrderAsPaid from './queries/updateOrderAsPaid.js'
+import _updateOrderAsRefunded, {
+  type RefundDetails
+} from './queries/updateOrderAsRefunded.js'
+import type * as types from './types.js'
 
-/*
- * Config
- */
+export default class MiniShopDB {
+  readonly #config: types.MiniShopConfig
 
-let config: types.MiniShopConfig = {
-  products: {},
-  fees: {}
-};
+  constructor(miniShopConfig: types.MiniShopConfig) {
+    this.#config = miniShopConfig
 
-export const setConfig = (miniShopConfig: types.MiniShopConfig) => {
-  config = miniShopConfig;
-}
+    exitHook(() => {
+      void pool_releaseAll()
+    })
+  }
 
-export const setMSSQLConfig = (mssqlConfig: MSSQLConfig) => {
-  config.mssqlConfig = mssqlConfig;
-};
+  async acknowledgeOrderItem(
+    orderID: number | string,
+    itemIndex: number | string,
+    acknowledgeValues: {
+      acknowledgedUser: string
+      acknowledgedTime?: Date
+    }
+  ): Promise<boolean> {
+    return await _acknowledgeOrderItem(
+      this.#config,
+      orderID,
+      itemIndex,
+      acknowledgeValues
+    )
+  }
 
-export const setOrderNumberFunction = (orderNumberFunction: () => string) => {
-  config.orderNumberFunction = orderNumberFunction;
-};
+  async createOrder(
+    shippingForm: Partial<types.ShippingForm>
+  ): Promise<CreateOrderReturn> {
+    return await _createOrder(this.#config, shippingForm)
+  }
 
-export const setFees = (fees: { [feeName: string]: types.Fee }) => {
-  config.fees = fees;
-}
+  async deleteOrder(
+    orderID: number,
+    deleteDetails: DeleteDetails
+  ): Promise<boolean> {
+    return await _deleteOrder(this.#config, orderID, deleteDetails)
+  }
 
-/*
- * Update Functions
- */
+  async unacknowledgeOrderItem(
+    orderID: number | string,
+    itemIndex: number | string
+  ): Promise<boolean> {
+    return await _unacknowledgeOrderItem(this.#config, orderID, itemIndex)
+  }
 
-import { _acknowledgeOrderItem } from "./acknowledgeOrderItem.js";
-export const acknowledgeOrderItem = async (orderID: number | string, itemIndex: number | string, acknowledgeValues: {
-  acknowledgedUser: string;
-  acknowledgedTime?: Date;
-}) => {
-  return await _acknowledgeOrderItem(config, orderID, itemIndex, acknowledgeValues);
-}
+  async updateOrderAsPaid(
+    validOrder: types.StoreValidatorReturn
+  ): Promise<boolean> {
+    return await _updateOrderAsPaid(this.#config, validOrder)
+  }
 
-import { _createOrder } from "./createOrder.js";
-export const createOrder = async (shippingForm: types.ShippingForm) => {
-  return await _createOrder(config, shippingForm);
-};
+  async updateOrderAsRefunded(
+    orderNumber: string,
+    orderSecret: string,
+    refundDetails: RefundDetails
+  ): Promise<boolean> {
+    return await _updateOrderAsRefunded(
+      this.#config,
+      orderNumber,
+      orderSecret,
+      refundDetails
+    )
+  }
 
-import { _deleteOrder, DeleteDetails } from "./deleteOrder.js";
-export const deleteOrder = async (orderID: number, deleteDetails: DeleteDetails) => {
-  return await _deleteOrder(config, orderID, deleteDetails);
-};
+  async getOrder(
+    orderNumber: string,
+    orderSecret: string,
+    orderIsPaid: boolean,
+    enforceExpiry = true
+  ): Promise<types.Order | undefined> {
+    return await _getOrder(
+      this.#config,
+      { orderNumber, orderSecret, orderIsPaid },
+      enforceExpiry
+    )
+  }
 
-import { _unacknowledgeOrderItem } from "./unacknowledgeOrderItem.js";
-export const unacknowledgeOrderItem = async (orderID: number | string, itemIndex: number | string) => {
-  return await _unacknowledgeOrderItem(config, orderID, itemIndex);
-};
+  async getOrderItem(
+    orderID: number | string,
+    itemIndex: number | string
+  ): Promise<types.OrderItem | undefined> {
+    return await _getOrderItem(this.#config, orderID, itemIndex)
+  }
 
-import { _updateOrderAsPaid } from "./updateOrderAsPaid.js";
-export const updateOrderAsPaid = async (validOrder: types.StoreValidatorReturn) => {
-  return await _updateOrderAsPaid(config, validOrder);
-};
+  async getOrderNumberBySecret(
+    orderSecret: string
+  ): Promise<string | undefined> {
+    return await _getOrderNumberBySecret(this.#config, orderSecret)
+  }
 
-import { _updateOrderAsRefunded, RefundDetails } from "./updateOrderAsRefunded.js";
-export const updateOrderAsRefunded = async (orderNumber: string, orderSecret: string, refundDetails: RefundDetails) => {
-  return await _updateOrderAsRefunded(config, orderNumber, orderSecret, refundDetails);
-};
+  async getOrders(filters: GetOrderFilters): Promise<types.Order[]> {
+    return await _getOrders(this.#config, filters)
+  }
 
-/*
- * Read Only Functions
- */
-
-import { _getOrder } from "./getOrder.js";
-export const getOrder = async (orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry = true) => {
-  return await _getOrder(config, orderNumber, orderSecret, orderIsPaid, enforceExpiry);
-};
-
-import { _getOrderItem } from "./getOrderItem.js";
-export const getOrderItem = async (orderID: number | string, itemIndex: number | string) => {
-  return await _getOrderItem(config, orderID, itemIndex);
-};
-
-import { _getOrderNumberBySecret } from "./getOrderNumberBySecret.js";
-export const getOrderNumberBySecret = async (orderSecret: string) => {
-  return await _getOrderNumberBySecret(config, orderSecret);
-};
-
-import { _getOrders, GetOrderFilters } from "./getOrders.js";
-export const getOrders = async (filters: GetOrderFilters) => {
-  return await _getOrders(config, filters);
-};
-
-import { _isOrderFoundAndPaid } from "./isOrderFoundAndPaid.js";
-export const isOrderFoundAndPaid = async (orderNumber: string, orderSecret: string) => {
-  return await _isOrderFoundAndPaid(config, orderNumber, orderSecret);
-};
-
-export const releaseAll = () => {
-  pool_releaseAll();
-}
-
-if (process) {
-  exitHook(releaseAll);
+  async isOrderFoundAndPaid(
+    orderNumber: string,
+    orderSecret: string
+  ): Promise<IsOrderFoundAndPaidReturn> {
+    return await _isOrderFoundAndPaid(this.#config, orderNumber, orderSecret)
+  }
 }

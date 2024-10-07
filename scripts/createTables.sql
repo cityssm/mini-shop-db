@@ -33,9 +33,9 @@ create table MiniShop.Orders (
 	deleteUser   nvarchar(20),
 	deleteReason nvarchar(50),
 
-	orderIsPaid         as cast(case when paymentTime      is null then 0 else 1 end as bit) persisted,
-	orderIsRefunded     as cast(case when refundTime       is null then 0 else 1 end as bit) persisted,
-	orderIsDeleted      as cast(case when deleteTime       is null then 0 else 1 end as bit) persisted
+	orderIsPaid     as cast(case when paymentTime is null then 0 else 1 end as bit) persisted,
+	orderIsRefunded as cast(case when refundTime  is null then 0 else 1 end as bit) persisted,
+	orderIsDeleted  as cast(case when deleteTime  is null then 0 else 1 end as bit) persisted
 )
 
 create table MiniShop.OrderItems (
