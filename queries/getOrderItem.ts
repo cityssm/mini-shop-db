@@ -1,4 +1,4 @@
-import sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool, { type IResult } from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
 
 import type { MiniShopConfig, OrderItem } from '../types'
@@ -23,13 +23,13 @@ export default async function _getOrderItem(
           where orderID = @orderID
           and itemIndex = @itemIndex
           and orderID in (select orderID from MiniShop.Orders where orderIsDeleted = 0)`
-      )
+      ) as IResult<OrderItem>
 
     if (orderItemResult.recordset.length === 0) {
       return undefined
     }
 
-    const item = orderItemResult.recordset[0] as OrderItem
+    const item = orderItemResult.recordset[0]
 
     const fieldsResult = await pool
       .request()

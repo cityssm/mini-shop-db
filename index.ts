@@ -110,7 +110,7 @@ export default class MiniShopDB {
     return await _getOrderNumberBySecret(this.#config, orderSecret)
   }
 
-  async getOrders(filters: GetOrderFilters): Promise<types.Order[]> {
+  async getOrders(filters: Partial<GetOrderFilters>): Promise<types.Order[]> {
     return await _getOrders(this.#config, filters)
   }
 

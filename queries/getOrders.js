@@ -42,6 +42,9 @@ export default async function _getOrders(config, filters) {
         let order;
         let item;
         for (const rawOrder of rawOrders) {
+            /*
+             * Order
+             */
             if (order !== undefined && order.orderID !== rawOrder.orderID) {
                 if (item !== undefined) {
                     order.items.push(item);
@@ -76,6 +79,9 @@ export default async function _getOrders(config, filters) {
                     items: []
                 };
             }
+            /*
+             * Item
+             */
             if (item !== undefined && item.itemIndex !== rawOrder.itemIndex) {
                 order.items.push(item);
                 item = undefined;
@@ -93,6 +99,9 @@ export default async function _getOrders(config, filters) {
                     itemIsAcknowledged: rawOrder.itemIsAcknowledged
                 };
             }
+            /*
+             * Item Field
+             */
             if (rawOrder.formFieldName !== undefined) {
                 item.fields.push({
                     formFieldName: rawOrder.formFieldName,

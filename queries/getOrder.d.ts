@@ -1,4 +1,4 @@
-import type { MiniShopConfig, Order } from '../types';
+import type { MiniShopConfig, Order } from '../types.js';
 export default function _getOrder(config: MiniShopConfig, orderDetails: {
     orderNumber: string;
     orderSecret: string;

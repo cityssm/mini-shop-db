@@ -6,6 +6,7 @@ export default async function _updateOrderAsPaid(config, validOrder) {
     if (!validOrder.isValid) {
         return false;
     }
+    // Check if the order can be marked as paid
     const order = await _isOrderFoundAndPaid(config, validOrder.orderNumber, validOrder.orderSecret);
     if (!order.found) {
         return false;

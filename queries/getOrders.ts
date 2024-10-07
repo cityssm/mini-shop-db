@@ -1,4 +1,4 @@
-import sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool, { type IResult } from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
 
 import type { MiniShopConfig, Order, OrderItem, OrderItemField } from '../types'
@@ -99,9 +99,9 @@ export default async function _getOrders(
 
     sql += ' order by o.orderID desc, i.itemIndex asc, f.formFieldName'
 
-    const rawResult = await pool.request().query(sql)
+    const rawResult = await pool.request().query(sql) as IResult<RawOrder[]>
 
-    const rawOrders = rawResult.recordset as RawOrder[]
+    const rawOrders = rawResult.recordset
 
     const orders: Order[] = []
 

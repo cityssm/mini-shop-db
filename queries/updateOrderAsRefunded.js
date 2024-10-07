@@ -3,6 +3,7 @@ import debug from 'debug';
 import _isOrderFoundAndPaid from './isOrderFoundAndPaid.js';
 const debugSQL = debug('mini-shop-db:updateOrderAsRefunded');
 export default async function _updateOrderAsRefunded(config, orderNumber, orderSecret, refundDetails) {
+    // Check if the order can be marked as paid
     const order = await _isOrderFoundAndPaid(config, orderNumber, orderSecret);
     if (!order.found || !order.paid) {
         return false;

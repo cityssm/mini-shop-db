@@ -1,8 +1,7 @@
-import sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool, { type IResult } from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
-import type * as sql from 'mssql'
 
-import type { MiniShopConfig, Order, OrderItemField } from '../types'
+import type { MiniShopConfig, Order, OrderItemField } from '../types.js'
 
 const debugSQL = debug('mini-shop-db:getOrder')
 
@@ -61,20 +60,19 @@ export default async function _getOrder(
     order.items = orderItemsResult.recordset
 
     // Get order item fields
-    const fieldsResult = await pool
+    const fieldsResult = (await pool
       .request()
       .input('orderID', order.orderID)
       .query(
         `select itemIndex, formFieldName, fieldValue
           from MiniShop.OrderItemFields
           where orderID = @orderID`
-      )
+      )) as IResult<OrderItemField>
 
     if (fieldsResult.recordset.length > 0) {
       const fieldsMap = new Map<number, OrderItemField[]>()
 
-      const fieldsList =
-        fieldsResult.recordset as sql.IRecordSet<OrderItemField>
+      const fieldsList = fieldsResult.recordset
 
       for (const fieldData of fieldsList) {
         if (fieldsMap.has(fieldData.itemIndex)) {

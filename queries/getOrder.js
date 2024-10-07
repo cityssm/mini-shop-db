@@ -4,6 +4,7 @@ const debugSQL = debug('mini-shop-db:getOrder');
 export default async function _getOrder(config, orderDetails, enforceExpiry = true) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
+        // Get the order record
         const orderResult = await pool
             .request()
             .input('orderNumber', orderDetails.orderNumber)
@@ -26,6 +27,7 @@ export default async function _getOrder(config, orderDetails, enforceExpiry = tr
             return undefined;
         }
         const order = orderResult.recordset[0];
+        // Get order items
         const orderItemsResult = await pool
             .request()
             .input('orderID', order.orderID)
@@ -33,12 +35,13 @@ export default async function _getOrder(config, orderDetails, enforceExpiry = tr
           from MiniShop.OrderItems
           where orderID = @orderID`);
         order.items = orderItemsResult.recordset;
-        const fieldsResult = await pool
+        // Get order item fields
+        const fieldsResult = (await pool
             .request()
             .input('orderID', order.orderID)
             .query(`select itemIndex, formFieldName, fieldValue
           from MiniShop.OrderItemFields
-          where orderID = @orderID`);
+          where orderID = @orderID`));
         if (fieldsResult.recordset.length > 0) {
             const fieldsMap = new Map();
             const fieldsList = fieldsResult.recordset;
@@ -56,6 +59,7 @@ export default async function _getOrder(config, orderDetails, enforceExpiry = tr
                 }
             }
         }
+        // Get order fees
         const orderFeesResult = await pool
             .request()
             .input('orderID', order.orderID)

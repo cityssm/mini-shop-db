@@ -19,6 +19,6 @@ export default class MiniShopDB {
     getOrder(orderNumber: string, orderSecret: string, orderIsPaid: boolean, enforceExpiry?: boolean): Promise<types.Order | undefined>;
     getOrderItem(orderID: number | string, itemIndex: number | string): Promise<types.OrderItem | undefined>;
     getOrderNumberBySecret(orderSecret: string): Promise<string | undefined>;
-    getOrders(filters: GetOrderFilters): Promise<types.Order[]>;
+    getOrders(filters: Partial<GetOrderFilters>): Promise<types.Order[]>;
     isOrderFoundAndPaid(orderNumber: string, orderSecret: string): Promise<IsOrderFoundAndPaidReturn>;
 }

@@ -6,6 +6,7 @@ async function insertOrderItem(config, pool, orderItem) {
     const unitPrice = typeof product.price === 'number'
         ? product.price
         : Number.parseFloat(orderItem.cartItem.unitPrice);
+    // Create the item record
     await pool
         .request()
         .input('orderID', orderItem.orderID)
@@ -16,6 +17,7 @@ async function insertOrderItem(config, pool, orderItem) {
         .query(`insert into MiniShop.OrderItems (
         orderID, itemIndex, productSKU, unitPrice, quantity)
         values (@orderID, @itemIndex, @productSKU, @unitPrice, @quantity)`);
+    // Create the item field records
     if (product.formFieldsToSave) {
         for (const formField of product.formFieldsToSave) {
             await pool
@@ -35,6 +37,7 @@ export default async function _createOrder(config, shippingForm) {
     const orderNumber = orderNumberFunction();
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
+        // Create the Order record
         const orderResult = (await pool
             .request()
             .input('orderNumber', orderNumber)
@@ -46,7 +49,9 @@ export default async function _createOrder(config, shippingForm) {
             .input('shippingCountry', (shippingForm.country ?? '').trim())
             .input('shippingPostalCode', (shippingForm.postalCode ?? '').trim())
             .input('shippingEmailAddress', (shippingForm.emailAddress ?? '').trim())
-            .input('shippingPhoneNumberDay', (shippingForm.phoneNumberDay ?? '').trim())
+            .input(
+        // eslint-disable-next-line no-secrets/no-secrets
+        'shippingPhoneNumberDay', (shippingForm.phoneNumberDay ?? '').trim())
             .input('shippingPhoneNumberEvening', (shippingForm.phoneNumberEvening ?? '').trim())
             .input('redirectURL', (shippingForm.redirectURL ?? '').trim())
             .query(`insert into MiniShop.Orders (
@@ -64,18 +69,23 @@ export default async function _createOrder(config, shippingForm) {
         const orderID = orderResult.recordset[0].orderID;
         const orderSecret = orderResult.recordset[0].orderSecret;
         const orderTime = orderResult.recordset[0].orderTime;
+        // Loop through the cart items
         const feeTotals = {};
         const allProducts = config.products;
         for (let cartIndex = 0; cartIndex < (shippingForm.cartItems ?? []).length; cartIndex += 1) {
+            // Maximum number of items allowed in the cart
             if (cartIndex > 255) {
                 break;
             }
             const cartItem = (shippingForm.cartItems ?? [])[cartIndex];
+            // Ignore invalid SKUs
             if (!Object.hasOwn(allProducts, cartItem.productSKU)) {
                 debugSQL('Invalid SKU: ' + cartItem.productSKU);
                 continue;
             }
+            // Create the item record
             await insertOrderItem(config, pool, { orderID, cartIndex, cartItem });
+            // Calculate the fees (if any)
             const product = allProducts[cartItem.productSKU];
             if (product.fees) {
                 for (const feeName of product.fees) {
@@ -85,6 +95,7 @@ export default async function _createOrder(config, shippingForm) {
                 }
             }
         }
+        // Create the fee records (if any)
         for (const feeName of Object.keys(feeTotals)) {
             await pool
                 .request()

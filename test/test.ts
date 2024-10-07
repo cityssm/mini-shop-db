@@ -13,7 +13,7 @@ const testProduct: Product = {
   price: 4.5
 }
 
-const testOrderData: Order = {
+const testOrderData = {
   orderID: -1,
   orderNumber: '',
   orderTime: new Date(),
@@ -39,7 +39,7 @@ const testOrderData: Order = {
       itemIsAcknowledged: false
     }
   ]
-}
+} satisfies Order
 
 await describe('mini-shop-db', async () => {
   let miniShopDB: MiniShopDB

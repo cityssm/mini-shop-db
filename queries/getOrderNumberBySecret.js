@@ -4,6 +4,7 @@ const debugSQL = debug('mini-shop-db:getOrderNumberBySecret');
 export default async function _getOrderNumberBySecret(config, orderSecret) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
+        // Get the order record
         const orderResult = (await pool
             .request()
             .input('orderSecret', orderSecret)
