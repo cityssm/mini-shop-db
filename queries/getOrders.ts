@@ -5,11 +5,14 @@ import type { MiniShopConfig, Order, OrderItem, OrderItemField } from '../types'
 
 const debugSQL = debug('mini-shop-db:getOrders')
 
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+type ZeroOrOne = 0 | 1
+
 export interface GetOrderFilters {
   productSKUs: string[]
-  orderIsPaid: 0 | 1
-  orderIsRefunded: 0 | 1
-  itemIsAcknowledged: 0 | 1
+  orderIsPaid: ZeroOrOne
+  orderIsRefunded: ZeroOrOne
+  itemIsAcknowledged: ZeroOrOne
   orderTimeMaxAgeDays: number
 }
 
@@ -53,6 +56,12 @@ interface RawOrder {
   fieldValue?: string
 }
 
+/**
+ * Retrieves a list of orders.
+ * @param config - MSSQL config
+ * @param filters - Search filters
+ * @returns An array of orders
+ */
 export default async function _getOrders(
   config: MiniShopConfig,
   filters: Partial<GetOrderFilters>
@@ -105,7 +114,10 @@ export default async function _getOrders(
 
     const orders: Order[] = []
 
+    // eslint-disable-next-line @typescript-eslint/init-declarations
     let order: (Order & { items: OrderItem[] }) | undefined
+    
+    // eslint-disable-next-line @typescript-eslint/init-declarations
     let item: (OrderItem & { fields: OrderItemField[] }) | undefined
 
     for (const rawOrder of rawOrders) {

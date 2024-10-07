@@ -5,6 +5,12 @@ import type { MiniShopConfig } from '../types'
 
 const debugSQL = debug('mini-shop-db:getOrderNumberBySecret')
 
+/**
+ * Retrieves an order number from a given order secret.
+ * @param config - MSSQL config
+ * @param orderSecret - Order secret
+ * @returns The order number if avaialble.
+ */
 export default async function _getOrderNumberBySecret(
   config: MiniShopConfig,
   orderSecret: string

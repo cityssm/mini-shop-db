@@ -1,6 +1,12 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:getOrders');
+/**
+ * Retrieves a list of orders.
+ * @param config - MSSQL config
+ * @param filters - Search filters
+ * @returns An array of orders
+ */
 export default async function _getOrders(config, filters) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
@@ -39,7 +45,9 @@ export default async function _getOrders(config, filters) {
         const rawResult = await pool.request().query(sql);
         const rawOrders = rawResult.recordset;
         const orders = [];
+        // eslint-disable-next-line @typescript-eslint/init-declarations
         let order;
+        // eslint-disable-next-line @typescript-eslint/init-declarations
         let item;
         for (const rawOrder of rawOrders) {
             /*

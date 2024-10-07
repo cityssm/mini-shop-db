@@ -40,7 +40,7 @@ await describe('mini-shop-db', async () => {
         miniShopDB = new MiniShopDB({
             mssqlConfig: config,
             orderNumberFunction: () => {
-                return 'testing-' + Date.now();
+                return `testing-${Date.now()}`;
             },
             products: {
                 TEST_ITEM: testProduct

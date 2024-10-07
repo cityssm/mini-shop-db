@@ -112,15 +112,19 @@ export type StoreValidatorErrorMessage =
   | 'missingOrderSecret'
   | 'paymentDeclined'
 
+export interface StoreValidatorValidReturn {
+  isValid: true
+  orderNumber: string
+  orderSecret: string
+  paymentID: string
+  paymentData?: Record<string, string>
+}
+
+interface StoreValidatorInvalidReturn {
+  isValid: false
+  errorCode: StoreValidatorErrorMessage
+}
+
 export type StoreValidatorReturn =
-  | {
-      isValid: true
-      orderNumber: string
-      orderSecret: string
-      paymentID: string
-      paymentData?: Record<string, string>
-    }
-  | {
-      isValid: false
-      errorCode: StoreValidatorErrorMessage
-    }
+  | StoreValidatorValidReturn
+  | StoreValidatorInvalidReturn

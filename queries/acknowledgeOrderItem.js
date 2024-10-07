@@ -1,6 +1,16 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:acknowledgeOrderItem');
+/**
+ * Acknowledges an order item.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param itemIndex - Item Index
+ * @param acknowledgeValues - Acknowledge user and time
+ * @param acknowledgeValues.acknowledgedUser - Acknowledge user
+ * @param acknowledgeValues.acknowledgedTime - Acknowledge time
+ * @returns `true` if successful
+ */
 export default async function _acknowledgeOrderItem(config, orderID, itemIndex, acknowledgeValues) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
@@ -17,6 +27,7 @@ export default async function _acknowledgeOrderItem(config, orderID, itemIndex, 
           acknowledgedTime = @acknowledgedTime
           where orderID = @orderID
           and itemIndex = @itemIndex`);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return result.rowsAffected[0] === 1;
     }
     catch (error) {

@@ -13,6 +13,14 @@ export interface RefundDetails {
   refundReason: string
 }
 
+/**
+ * Updates an order as refunded.
+ * @param config - MSSQL config
+ * @param orderNumber - The order number
+ * @param orderSecret - The order secret
+ * @param refundDetails - The refund details
+ * @returns `true` when an order is marked as refunded
+ */
 export default async function _updateOrderAsRefunded(
   config: MiniShopConfig,
   orderNumber: string,

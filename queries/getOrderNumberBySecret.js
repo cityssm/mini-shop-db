@@ -1,6 +1,12 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:getOrderNumberBySecret');
+/**
+ * Retrieves an order number from a given order secret.
+ * @param config - MSSQL config
+ * @param orderSecret - Order secret
+ * @returns The order number if avaialble.
+ */
 export default async function _getOrderNumberBySecret(config, orderSecret) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);

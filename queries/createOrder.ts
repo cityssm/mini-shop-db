@@ -1,6 +1,8 @@
-import sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool, {
+  type ConnectionPool,
+  type IResult
+} from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
-import type * as sql from 'mssql'
 
 import type { CartItem, MiniShopConfig, ShippingForm } from '../types.js'
 
@@ -19,7 +21,7 @@ export type CreateOrderReturn =
 
 async function insertOrderItem(
   config: MiniShopConfig,
-  pool: sql.ConnectionPool,
+  pool: ConnectionPool,
   orderItem: {
     orderID: number
     cartIndex: number
@@ -48,23 +50,27 @@ async function insertOrderItem(
     )
 
   // Create the item field records
-  if (product.formFieldsToSave) {
-    for (const formField of product.formFieldsToSave) {
-      await pool
-        .request()
-        .input('orderID', orderItem.orderID)
-        .input('itemIndex', orderItem.cartIndex)
-        .input('formFieldName', formField.formFieldName)
-        .input('fieldValue', orderItem.cartItem[formField.formFieldName] || '')
-        .query(
-          `insert into MiniShop.OrderItemFields (
-            orderID, itemIndex, formFieldName, fieldValue)
-            values (@orderID, @itemIndex, @formFieldName, @fieldValue)`
-        )
-    }
+  for (const formField of product.formFieldsToSave ?? []) {
+    await pool
+      .request()
+      .input('orderID', orderItem.orderID)
+      .input('itemIndex', orderItem.cartIndex)
+      .input('formFieldName', formField.formFieldName)
+      .input('fieldValue', orderItem.cartItem[formField.formFieldName] ?? '')
+      .query(
+        `insert into MiniShop.OrderItemFields (
+          orderID, itemIndex, formFieldName, fieldValue)
+          values (@orderID, @itemIndex, @formFieldName, @fieldValue)`
+      )
   }
 }
 
+/**
+ * Creates a new Order record.
+ * @param config - MSSQL donfig
+ * @param shippingForm - Shipping form
+ * @returns Create result
+ */
 export default async function _createOrder(
   config: MiniShopConfig,
   shippingForm: Partial<ShippingForm>
@@ -110,15 +116,13 @@ export default async function _createOrder(
             @shippingCity, @shippingProvince, @shippingCountry, @shippingPostalCode,
             @shippingEmailAddress, @shippingPhoneNumberDay, @shippingPhoneNumberEvening,
             @redirectURL)`
-      )) as sql.IResult<{
+      )) as IResult<{
       orderID: number
       orderSecret: string
       orderTime: Date
     }>
 
-    const orderID = orderResult.recordset[0].orderID
-    const orderSecret = orderResult.recordset[0].orderSecret
-    const orderTime = orderResult.recordset[0].orderTime
+    const insertedOrder = orderResult.recordset[0]
 
     // Loop through the cart items
     const feeTotals: Record<string, number> = {}
@@ -139,22 +143,24 @@ export default async function _createOrder(
 
       // Ignore invalid SKUs
       if (!Object.hasOwn(allProducts, cartItem.productSKU)) {
-        debugSQL('Invalid SKU: ' + cartItem.productSKU)
+        debugSQL(`Invalid SKU: ${cartItem.productSKU}`)
         continue
       }
 
       // Create the item record
-      await insertOrderItem(config, pool, { orderID, cartIndex, cartItem })
+      await insertOrderItem(config, pool, {
+        orderID: insertedOrder.orderID,
+        cartIndex,
+        cartItem
+      })
 
       // Calculate the fees (if any)
       const product = allProducts[cartItem.productSKU]
 
-      if (product.fees) {
-        for (const feeName of product.fees) {
-          feeTotals[feeName] =
-            (feeTotals[feeName] || 0) +
-            config.fees[feeName].feeCalculation(product)
-        }
+      for (const feeName of product.fees ?? []) {
+        feeTotals[feeName] =
+          (feeTotals[feeName] ?? 0) +
+          config.fees[feeName].feeCalculation(product)
       }
     }
 
@@ -162,7 +168,7 @@ export default async function _createOrder(
     for (const feeName of Object.keys(feeTotals)) {
       await pool
         .request()
-        .input('orderID', orderID)
+        .input('orderID', insertedOrder.orderID)
         .input('feeName', feeName)
         .input('feeTotal', feeTotals[feeName])
         .query(
@@ -175,8 +181,8 @@ export default async function _createOrder(
     return {
       success: true,
       orderNumber,
-      orderSecret,
-      orderTime
+      orderSecret: insertedOrder.orderSecret,
+      orderTime: insertedOrder.orderTime
     }
   } catch (error) {
     debugSQL(error)

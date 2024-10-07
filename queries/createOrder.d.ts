@@ -7,4 +7,10 @@ export type CreateOrderReturn = {
 } | {
     success: false;
 };
+/**
+ * Creates a new Order record.
+ * @param config - MSSQL donfig
+ * @param shippingForm - Shipping form
+ * @returns Create result
+ */
 export default function _createOrder(config: MiniShopConfig, shippingForm: Partial<ShippingForm>): Promise<CreateOrderReturn>;

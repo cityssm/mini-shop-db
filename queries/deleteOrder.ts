@@ -10,6 +10,13 @@ export interface DeleteDetails {
   deleteReason: string
 }
 
+/**
+ * Deletes an order.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param deleteDetails - Deleting user and reason
+ * @returns `true` if successful
+ */
 export default async function _deleteOrder(
   config: MiniShopConfig,
   orderID: number,
@@ -29,6 +36,7 @@ export default async function _deleteOrder(
           and (orderIsPaid = 0 or orderIsRefunded = 1)`
       )
 
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (orderStatusResult.recordset.length === 0) {
       return false
     }

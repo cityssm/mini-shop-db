@@ -5,6 +5,16 @@ import type { MiniShopConfig } from '../types.js'
 
 const debugSQL = debug('mini-shop-db:acknowledgeOrderItem')
 
+/**
+ * Acknowledges an order item.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param itemIndex - Item Index
+ * @param acknowledgeValues - Acknowledge user and time
+ * @param acknowledgeValues.acknowledgedUser - Acknowledge user
+ * @param acknowledgeValues.acknowledgedTime - Acknowledge time
+ * @returns `true` if successful
+ */
 export default async function _acknowledgeOrderItem(
   config: MiniShopConfig,
   orderID: number | string,
@@ -36,6 +46,7 @@ export default async function _acknowledgeOrderItem(
           and itemIndex = @itemIndex`
       )
 
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     return result.rowsAffected[0] === 1
   } catch (error) {
     debugSQL(error)

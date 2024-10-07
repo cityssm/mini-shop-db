@@ -7,6 +7,12 @@ import _isOrderFoundAndPaid from './isOrderFoundAndPaid.js'
 
 const debugSQL = debug('mini-shop-db:updateOrderAsPaid')
 
+/**
+ * Updates an order with paid.
+ * @param config - MSSQL config
+ * @param validOrder - A valid order
+ * @returns `true` when the order is marked as paid
+ */
 export default async function _updateOrderAsPaid(
   config: MiniShopConfig,
   validOrder: StoreValidatorReturn
@@ -42,13 +48,14 @@ export default async function _updateOrderAsPaid(
           where orderID = @orderID`
       )
 
-    if (validOrder.paymentData) {
+    if (validOrder.paymentData !== undefined) {
       for (const dataName of Object.keys(validOrder.paymentData)) {
         await pool
           .request()
           .input('orderID', order.orderID)
           .input('dataName', dataName)
-          .input('dataValue', validOrder.paymentData[dataName] || '')
+          // eslint-disable-next-line security/detect-object-injection
+          .input('dataValue', validOrder.paymentData[dataName] ?? '')
           .query(
             `insert into MiniShop.PaymentData (orderID, dataName, dataValue)
               values (@orderID, @dataName, @dataValue)`

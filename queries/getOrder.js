@@ -1,11 +1,23 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:getOrder');
+const orderTimeExpiryDays = 90;
+const paymentTimeExpiryDays = 180;
+/**
+ * Retrieves an order record.
+ * @param config - MSSQL config
+ * @param orderDetails - Order details
+ * @param orderDetails.orderNumber - The order number
+ * @param orderDetails.orderSecret - The order secret
+ * @param orderDetails.orderIsPaid - Whether the order is paid
+ * @param enforceExpiry - When `true`, older orders will be restricted
+ * @returns An order record when available
+ */
 export default async function _getOrder(config, orderDetails, enforceExpiry = true) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);
         // Get the order record
-        const orderResult = await pool
+        const orderResult = (await pool
             .request()
             .input('orderNumber', orderDetails.orderNumber)
             .input('orderSecret', orderDetails.orderSecret)
@@ -18,11 +30,11 @@ export default async function _getOrder(config, orderDetails, enforceExpiry = tr
           from MiniShop.Orders
           where orderIsRefunded = 0 and orderIsDeleted = 0
           ${enforceExpiry
-            ? ' and (datediff(minute, orderTime, getdate()) < 90 or datediff(minute, paymentTime, getdate()) < 180)'
+            ? ` and (datediff(minute, orderTime, getdate()) < ${orderTimeExpiryDays} or datediff(minute, paymentTime, getdate()) < ${paymentTimeExpiryDays})`
             : ''}
           and orderNumber = @orderNumber
           and orderSecret = @orderSecret
-          and orderIsPaid = @orderIsPaid`);
+          and orderIsPaid = @orderIsPaid`));
         if (orderResult.recordset.length === 0) {
             return undefined;
         }
@@ -46,8 +58,11 @@ export default async function _getOrder(config, orderDetails, enforceExpiry = tr
             const fieldsMap = new Map();
             const fieldsList = fieldsResult.recordset;
             for (const fieldData of fieldsList) {
+                if (fieldData.itemIndex === undefined) {
+                    continue;
+                }
                 if (fieldsMap.has(fieldData.itemIndex)) {
-                    fieldsMap.get(fieldData.itemIndex).push(fieldData);
+                    fieldsMap.get(fieldData.itemIndex)?.push(fieldData);
                 }
                 else {
                     fieldsMap.set(fieldData.itemIndex, [fieldData]);

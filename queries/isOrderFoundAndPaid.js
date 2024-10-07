@@ -1,6 +1,13 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:isOrderFoundAndPaid');
+/**
+ * Retrieves the existence and status of a given order.
+ * @param config - MSSQL config
+ * @param orderNumber - Order number
+ * @param orderSecret - Order secret
+ * @returns the status of the order
+ */
 export default async function _isOrderFoundAndPaid(config, orderNumber, orderSecret) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);

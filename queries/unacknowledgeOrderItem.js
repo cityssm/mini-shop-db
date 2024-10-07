@@ -1,6 +1,13 @@
 import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:unacknowledgeOrderItem');
+/**
+ * Unacknowledges a given order item.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param itemIndex - Item index
+ * @returns `true` when successful
+ */
 export default async function _unacknowledgeOrderItem(config, orderID, itemIndex) {
     try {
         const pool = await sqlPool.connect(config.mssqlConfig);

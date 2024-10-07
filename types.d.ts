@@ -93,13 +93,16 @@ export interface Fee {
     feeCalculation: (product: Product) => number;
 }
 export type StoreValidatorErrorMessage = 'noHandler' | 'noResult' | 'missingOrderNumber' | 'invalidOrderNumber' | 'missingOrderSecret' | 'paymentDeclined';
-export type StoreValidatorReturn = {
+export interface StoreValidatorValidReturn {
     isValid: true;
     orderNumber: string;
     orderSecret: string;
     paymentID: string;
     paymentData?: Record<string, string>;
-} | {
+}
+interface StoreValidatorInvalidReturn {
     isValid: false;
     errorCode: StoreValidatorErrorMessage;
-};
+}
+export type StoreValidatorReturn = StoreValidatorValidReturn | StoreValidatorInvalidReturn;
+export {};

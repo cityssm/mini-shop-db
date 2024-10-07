@@ -5,6 +5,13 @@ import type { MiniShopConfig } from '../types.js'
 
 const debugSQL = debug('mini-shop-db:unacknowledgeOrderItem')
 
+/**
+ * Unacknowledges a given order item.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param itemIndex - Item index
+ * @returns `true` when successful
+ */
 export default async function _unacknowledgeOrderItem(
   config: MiniShopConfig,
   orderID: number | string,

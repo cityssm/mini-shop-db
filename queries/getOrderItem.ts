@@ -5,6 +5,13 @@ import type { MiniShopConfig, OrderItem } from '../types'
 
 const debugSQL = debug('mini-shop-db:getOrderItem')
 
+/**
+ * Retrieves an order item record.
+ * @param config - MSSQL config
+ * @param orderID - Order ID
+ * @param itemIndex - Item index
+ * @returns Order item record if available
+ */
 export default async function _getOrderItem(
   config: MiniShopConfig,
   orderID: number | string,
@@ -13,7 +20,7 @@ export default async function _getOrderItem(
   try {
     const pool = await sqlPool.connect(config.mssqlConfig)
 
-    const orderItemResult = await pool
+    const orderItemResult = (await pool
       .request()
       .input('orderID', orderID)
       .input('itemIndex', itemIndex)
@@ -23,7 +30,7 @@ export default async function _getOrderItem(
           where orderID = @orderID
           and itemIndex = @itemIndex
           and orderID in (select orderID from MiniShop.Orders where orderIsDeleted = 0)`
-      ) as IResult<OrderItem>
+      )) as IResult<OrderItem>
 
     if (orderItemResult.recordset.length === 0) {
       return undefined
