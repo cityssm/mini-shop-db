@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
 import { releaseAll } from '@cityssm/mssql-multi-pool';
 import MiniShopDB from '../index.js';
-import * as configFile from './test.config.js';
+import { config } from './test.config.js';
 const testProduct = {
     productSKU: 'TEST_ITEM',
     price: 4.5
@@ -38,7 +38,7 @@ await describe('mini-shop-db', async () => {
     let miniShopDB;
     before(() => {
         miniShopDB = new MiniShopDB({
-            mssqlConfig: configFile.config,
+            mssqlConfig: config,
             orderNumberFunction: () => {
                 return 'testing-' + Date.now();
             },

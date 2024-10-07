@@ -16,12 +16,18 @@ import _updateOrderAsPaid from './queries/updateOrderAsPaid.js'
 import _updateOrderAsRefunded, {
   type RefundDetails
 } from './queries/updateOrderAsRefunded.js'
-import type * as types from './types.js'
+import type {
+  MiniShopConfig,
+  Order,
+  OrderItem,
+  ShippingForm,
+  StoreValidatorReturn
+} from './types.js'
 
 export default class MiniShopDB {
-  readonly #config: types.MiniShopConfig
+  readonly #config: MiniShopConfig
 
-  constructor(miniShopConfig: types.MiniShopConfig) {
+  constructor(miniShopConfig: MiniShopConfig) {
     this.#config = miniShopConfig
 
     exitHook(() => {
@@ -46,7 +52,7 @@ export default class MiniShopDB {
   }
 
   async createOrder(
-    shippingForm: Partial<types.ShippingForm>
+    shippingForm: Partial<ShippingForm>
   ): Promise<CreateOrderReturn> {
     return await _createOrder(this.#config, shippingForm)
   }
@@ -65,9 +71,7 @@ export default class MiniShopDB {
     return await _unacknowledgeOrderItem(this.#config, orderID, itemIndex)
   }
 
-  async updateOrderAsPaid(
-    validOrder: types.StoreValidatorReturn
-  ): Promise<boolean> {
+  async updateOrderAsPaid(validOrder: StoreValidatorReturn): Promise<boolean> {
     return await _updateOrderAsPaid(this.#config, validOrder)
   }
 
@@ -89,7 +93,7 @@ export default class MiniShopDB {
     orderSecret: string,
     orderIsPaid: boolean,
     enforceExpiry = true
-  ): Promise<types.Order | undefined> {
+  ): Promise<Order | undefined> {
     return await _getOrder(
       this.#config,
       { orderNumber, orderSecret, orderIsPaid },
@@ -100,7 +104,7 @@ export default class MiniShopDB {
   async getOrderItem(
     orderID: number | string,
     itemIndex: number | string
-  ): Promise<types.OrderItem | undefined> {
+  ): Promise<OrderItem | undefined> {
     return await _getOrderItem(this.#config, orderID, itemIndex)
   }
 
@@ -121,3 +125,5 @@ export default class MiniShopDB {
     return await _isOrderFoundAndPaid(this.#config, orderNumber, orderSecret)
   }
 }
+
+export type * as types from './types.js'

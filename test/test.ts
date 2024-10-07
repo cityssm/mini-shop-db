@@ -6,7 +6,7 @@ import { releaseAll } from '@cityssm/mssql-multi-pool'
 import MiniShopDB from '../index.js'
 import type { Order, Product } from '../types.js'
 
-import * as configFile from './test.config.js'
+import { config } from './test.config.js'
 
 const testProduct: Product = {
   productSKU: 'TEST_ITEM',
@@ -46,7 +46,7 @@ await describe('mini-shop-db', async () => {
 
   before(() => {
     miniShopDB = new MiniShopDB({
-      mssqlConfig: configFile.config,
+      mssqlConfig: config,
       orderNumberFunction: () => {
         return 'testing-' + Date.now()
       },
