@@ -1,4 +1,4 @@
-import * as sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
 
 import type { MiniShopConfig, StoreValidatorReturn } from '../types.js'
@@ -36,10 +36,10 @@ export default async function _updateOrderAsPaid(
       .input('paymentID', validOrder.paymentID)
       .input('orderID', order.orderID)
       .query(
-        'update MiniShop.Orders' +
-          ' set paymentID = @paymentID,' +
-          ' paymentTime = getdate()' +
-          ' where orderID = @orderID'
+        `update MiniShop.Orders
+          set paymentID = @paymentID,
+          paymentTime = getdate()
+          where orderID = @orderID`
       )
 
     if (validOrder.paymentData) {
@@ -50,8 +50,8 @@ export default async function _updateOrderAsPaid(
           .input('dataName', dataName)
           .input('dataValue', validOrder.paymentData[dataName] || '')
           .query(
-            'insert into MiniShop.PaymentData (orderID, dataName, dataValue)' +
-              ' values (@orderID, @dataName, @dataValue)'
+            `insert into MiniShop.PaymentData (orderID, dataName, dataValue)
+              values (@orderID, @dataName, @dataValue)`
           )
       }
     }

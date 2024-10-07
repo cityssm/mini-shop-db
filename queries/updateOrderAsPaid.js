@@ -1,4 +1,4 @@
-import * as sqlPool from '@cityssm/mssql-multi-pool';
+import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 import _isOrderFoundAndPaid from './isOrderFoundAndPaid.js';
 const debugSQL = debug('mini-shop-db:updateOrderAsPaid');
@@ -19,10 +19,10 @@ export default async function _updateOrderAsPaid(config, validOrder) {
             .request()
             .input('paymentID', validOrder.paymentID)
             .input('orderID', order.orderID)
-            .query('update MiniShop.Orders' +
-            ' set paymentID = @paymentID,' +
-            ' paymentTime = getdate()' +
-            ' where orderID = @orderID');
+            .query(`update MiniShop.Orders
+          set paymentID = @paymentID,
+          paymentTime = getdate()
+          where orderID = @orderID`);
         if (validOrder.paymentData) {
             for (const dataName of Object.keys(validOrder.paymentData)) {
                 await pool
@@ -30,8 +30,8 @@ export default async function _updateOrderAsPaid(config, validOrder) {
                     .input('orderID', order.orderID)
                     .input('dataName', dataName)
                     .input('dataValue', validOrder.paymentData[dataName] || '')
-                    .query('insert into MiniShop.PaymentData (orderID, dataName, dataValue)' +
-                    ' values (@orderID, @dataName, @dataValue)');
+                    .query(`insert into MiniShop.PaymentData (orderID, dataName, dataValue)
+              values (@orderID, @dataName, @dataValue)`);
             }
         }
         return true;

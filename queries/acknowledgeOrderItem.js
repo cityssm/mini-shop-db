@@ -1,4 +1,4 @@
-import * as sqlPool from '@cityssm/mssql-multi-pool';
+import sqlPool from '@cityssm/mssql-multi-pool';
 import debug from 'debug';
 const debugSQL = debug('mini-shop-db:acknowledgeOrderItem');
 export default async function _acknowledgeOrderItem(config, orderID, itemIndex, acknowledgeValues) {

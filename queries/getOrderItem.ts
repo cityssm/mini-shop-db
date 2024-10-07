@@ -1,4 +1,4 @@
-import * as sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
 
 import type { MiniShopConfig, OrderItem } from '../types'

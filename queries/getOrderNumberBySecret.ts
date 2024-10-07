@@ -1,4 +1,4 @@
-import * as sqlPool from '@cityssm/mssql-multi-pool'
+import sqlPool, { type IResult } from '@cityssm/mssql-multi-pool'
 import debug from 'debug'
 
 import type { MiniShopConfig } from '../types'
@@ -22,7 +22,7 @@ export default async function _getOrderNumberBySecret(
           where orderIsRefunded = 0
           and orderIsDeleted = 0
           and orderSecret = @orderSecret`
-      )) as sqlPool.IResult<{ orderNumber: string }>
+      )) as IResult<{ orderNumber: string }>
 
     if (orderResult.recordset.length === 0) {
       return undefined
