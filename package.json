@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/cityssm/mini-shop-db#readme",
   "dependencies": {
-    "@cityssm/mssql-multi-pool": "^3.2.0",
+    "@cityssm/mssql-multi-pool": "^4.0.0",
     "debug": "^4.3.7",
     "exit-hook": "^4.0.0",
     "mssql": "^11.0.1"
